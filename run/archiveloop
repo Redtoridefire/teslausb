@@ -295,6 +295,16 @@ function archive_clips () {
   connect_usb_drives_to_host
 }
 
+function check_if_usb_gadget_is_mounted () {
+    if [ ! -d /devices/platform/soc/20980000.usb/gadget/lun0 ]
+    then
+        log "USB Gadget not mounted. Fixing files and remounting..."
+        disconnect_usb_drives_from_host
+        mount_and_fix_errors_in_files
+        connect_usb_drives_to_host
+    fi
+}
+
 function truncate_log () {
   local log_length=$( wc -l "$LOG_FILE" | cut -d' ' -f 1 )
   if [ "$log_length" -gt 10000 ]
@@ -369,4 +379,6 @@ do
   doubleblink
 
   wait_for_archive_to_be_unreachable
+  
+  check_if_usb_gadget_is_mounted
 done
