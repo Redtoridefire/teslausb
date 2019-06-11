@@ -360,8 +360,6 @@ else
   mount_and_fix_errors_in_files
 
   connect_usb_drives_to_host
-  
-  check_if_usb_gadget_is_mounted
 fi
 
 while [ true ]
@@ -381,4 +379,6 @@ do
   doubleblink
 
   wait_for_archive_to_be_unreachable
+    
+  check_if_usb_gadget_is_mounted
 done
