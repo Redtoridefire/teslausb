@@ -1,4 +1,5 @@
 # teslausb
+## This script is deprecated and not in active development. Please use https://github.com/marcone/teslausb
 
 ## Intro
 
