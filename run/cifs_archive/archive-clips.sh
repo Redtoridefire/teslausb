@@ -5,6 +5,7 @@ log "Moving clips to archive..."
 NUM_FILES_MOVED=0
 NUM_FILES_FAILED=0
 NUM_FILES_DELETED=0
+NUM_FILES_CONT_FAIL=0
 
 function keep_car_awake() {
   # If the tesla_api.py script is installed, send the car a wake_up command.
@@ -44,11 +45,11 @@ function moveclips() {
       else
         log "Moving '$file_name'"
         outdir=$(dirname "$file_name")
-        if mv -f "$ROOT/$file_name" "$ARCHIVE_MOUNT/$outdir"
+        if timeout 90 mv -f "$ROOT/$file_name" "$ARCHIVE_MOUNT/$outdir"
         then
           log "Moved '$file_name'"
           NUM_FILES_MOVED=$((NUM_FILES_MOVED + 1))
-
+          NUM_FILES_CONT_FAIL=0
           # Every 5 minutes, send a wakeup command to the car via the Tesla API,
           # to keep the Pi powered.
           if (( $SECONDS / 300 > 0 ))
@@ -61,6 +62,12 @@ function moveclips() {
         else
           log "Failed to move '$file_name'"
           NUM_FILES_FAILED=$((NUM_FILES_FAILED + 1))
+          NUM_FILES_CONT_FAIL=$((NUM_FILES_CONT_FAIL + 1))
+          if [ $NUM_FILES_CONT_FAIL -gt 3 ]
+          then
+            log "More than 3 consecutive failures. Aborting archiving ..."
+            exit 1
+          fi
         fi
       fi
     else
