@@ -65,7 +65,7 @@ function moveclips() {
           NUM_FILES_CONT_FAIL=$((NUM_FILES_CONT_FAIL + 1))
           if [ $NUM_FILES_CONT_FAIL -gt 3 ]
           then
-            log "More than 3 consecutive failures. Aborting archiving ..."
+            log "More than 3 consecutive failures. Abort archiving ..."
             exit 1
           fi
         fi
