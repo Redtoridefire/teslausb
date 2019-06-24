@@ -66,6 +66,7 @@ function moveclips() {
           if [ $NUM_FILES_CONT_FAIL -gt 3 ]
           then
             log "More than 3 consecutive failures. Abort archiving ..."
+            /root/bin/send-push-message "TeslaUSB: DashCam Archive failed" "More than 3 consecutive failures. Abort archiving ..."
             exit 1
           fi
         fi
@@ -89,7 +90,7 @@ log "Moved $NUM_FILES_MOVED file(s), failed to copy $NUM_FILES_FAILED, deleted $
 
 if [ $NUM_FILES_MOVED -gt 0 ]
 then
-  /root/bin/send-push-message "$NUM_FILES_MOVED"
+  /root/bin/send-push-message "TeslaUSB: DashCam Archive complete" "Moved $NUM_FILES_MOVED file(s), failed to copy $NUM_FILES_FAILED, deleted $NUM_FILES_DELETED."
 fi
 
 log "Finished moving clips to archive."
