@@ -234,6 +234,12 @@ function upgrade_packages () {
   fi
 }
 
+function install_python_packages () {
+  setup_progress "Installing python packages..."
+  apt-get --assume-yes install python3-pip
+  pip3 install boto3
+}
+
 function set_timezone () {
   if [ ! -z ${timezone:+x} ]
   then
@@ -447,6 +453,7 @@ else
 fi
 
 update_package_index
+install_python_packages
 
 # If USE_LED_FOR_SETUP_PROGRESS = true.
 setup_led_off
