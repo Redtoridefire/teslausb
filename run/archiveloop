@@ -247,7 +247,7 @@ function disconnect_usb_drives_from_host () {
 function archive_teslacam_clips () {
   log "Starting recording archiving..."
   
-  /root/bin/send-push-message "TeslaUSB: DashCam Archive started" "Dashcam archiving started at $(date)"
+  /root/bin/send-push-message "TeslaUSB:" "Dashcam archiving started at $(date)"
 
   ensure_cam_file_is_mounted
 
@@ -261,7 +261,7 @@ function archive_teslacam_clips () {
 function copy_music_files () {
   log "Starting music sync..."
   
-  /root/bin/send-push-message "TeslaUSB: Music copy started" "Music copy started at $(date)"
+  /root/bin/send-push-message "TeslaUSB:" "Music copy started at $(date)"
 
   ensure_music_file_is_mounted
 
