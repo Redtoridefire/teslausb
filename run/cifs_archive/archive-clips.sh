@@ -70,6 +70,7 @@ function moveclips() {
           if ! /root/bin/check-wifi.sh
           then
             log "Wifi Disconnected. Aborting archiving ..."
+            killall timeout-monitor.sh
             exit 1
           fi
         fi
@@ -96,4 +97,5 @@ then
   /root/bin/send-push-message "TeslaUSB: DashCam Archive complete" "Moved $NUM_FILES_MOVED file(s), failed to copy $NUM_FILES_FAILED, deleted $NUM_FILES_DELETED."
 fi
 
+killall timeout-monitor.sh
 log "Finished moving clips to archive."
