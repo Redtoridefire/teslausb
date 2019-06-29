@@ -34,7 +34,11 @@ function moveclips() {
     if [ -d "$ROOT/$file_name" ]
     then
       log "Creating output directory '$file_name'"
-      mkdir -p "$ARCHIVE_MOUNT/$file_name"
+      if ! mkdir -p "$ARCHIVE_MOUNT/$file_name"
+      then
+        log "Failed to create '$file_name', check that archive server is writable and has free space"
+        return
+      fi
     elif [ -f "$ROOT/$file_name" ]
     then
       size=$(stat -c%s "$ROOT/$file_name")
@@ -89,7 +93,7 @@ log "Moved $NUM_FILES_MOVED file(s), failed to copy $NUM_FILES_FAILED, deleted $
 
 if [ $NUM_FILES_MOVED -gt 0 ]
 then
-  /root/bin/send-push-message "$NUM_FILES_MOVED"
+  /root/bin/send-push-message "TeslaUSB: DashCam Archive complete" "Moved $NUM_FILES_MOVED file(s), failed to copy $NUM_FILES_FAILED, deleted $NUM_FILES_DELETED."
 fi
 
 log "Finished moving clips to archive."
