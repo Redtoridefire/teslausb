@@ -20,6 +20,8 @@ function moveclips() {
   # Set the Bash variable "SECONDS" to 0, so we can count how long we've been
   # archiving, for Tesla API purposes.
   SECONDS=0
+  
+  /root/bin/timeout-monitor.sh $$ /mutable/archiveloop.log &>> "$LOG_FILE" &
 
   if [ ! -d "$ROOT" ]
   then
@@ -44,7 +46,7 @@ function moveclips() {
       else
         log "Moving '$file_name'"
         outdir=$(dirname "$file_name")
-        if mv -f "$ROOT/$file_name" "$ARCHIVE_MOUNT/$outdir"
+        if timeout 120 mv -f "$ROOT/$file_name" "$ARCHIVE_MOUNT/$outdir"
         then
           log "Moved '$file_name'"
           NUM_FILES_MOVED=$((NUM_FILES_MOVED + 1))
@@ -61,6 +63,11 @@ function moveclips() {
         else
           log "Failed to move '$file_name'"
           NUM_FILES_FAILED=$((NUM_FILES_FAILED + 1))
+          if ! /root/bin/check-wifi.sh
+          then
+            log "Wifi Disconnected. Aborting archiving ..."
+            exit 1
+          fi
         fi
       fi
     else
