@@ -43,9 +43,6 @@ function send_ifttt () {
   "https://maker.ifttt.com/trigger/$ifttt_event_name/with/key/$ifttt_key"
 }
 
-if [ $NUM_FILES_MOVED -gt 0 ]
-then
-  [ -r "/root/.teslaCamPushoverCredentials" ] && send_pushover
-  [ -r "/root/.teslaCamGotifySettings" ] && send_gotify
-  [ -r "/root/.teslaCamIftttSettings" ] && send_ifttt
-fi
+[ -r "/root/.teslaCamPushoverCredentials" ] && send_pushover
+[ -r "/root/.teslaCamGotifySettings" ] && send_gotify
+[ -r "/root/.teslaCamIftttSettings" ] && send_ifttt
