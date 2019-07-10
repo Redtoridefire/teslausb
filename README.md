@@ -23,7 +23,7 @@ You can configure a Raspberry Pi Zero W so that your Tesla thinks it's a USB dri
 
 Archiving the clips can take from seconds to hours depending on how many clips you've saved and how strong the WiFi signal is in your Tesla. If you find that the clips aren't getting completely transferred before the car powers down after you park or before you leave you can use the Tesla app to turn on the Climate control. This will send power to the Raspberry Pi, allowing it to complete the archival operation.
 
-Alternatively, you can provide your Tesla account credentials and VIN in TeslaUSB's settings, which will allow it to use the [Tesla API](https://tesla-api.timdorr.com) to keep the car awake while the files transfer. Instructions are available in the [one step setup instructions](https://github.com/marcone/teslausb/blob/main-dev/doc/OneStepSetup.md)
+Alternatively, you can provide your Tesla account credentials and VIN in TeslaUSB's settings, which will allow it to use the [Tesla API](https://tesla-api.timdorr.com) to keep the car awake while the files transfer. Instructions are available below and in the [one step setup instructions](https://github.com/marcone/teslausb/blob/main-dev/doc/OneStepSetup.md)
 
 ## Contributing
 You're welcome to contribute to this repo by submitting pull requests and creating issues.
@@ -58,121 +58,155 @@ Download: [Raspbian Stretch Lite](https://www.raspberrypi.org/downloads/raspbian
 Download and install: [Etcher](http://etcher.io)
 
 ## Set up the Raspberry Pi
-There are four phases to setting up the Pi:
-1. Get the OS onto the micro sd card.
-1. Get a shell on the Pi.
-1. Set up the archive for dashcam clips.
-1. Set up the USB storage functionality.
+This is a streamlined process for setting up the Pi. You'll flash a preconfigured version of Raspbian Stretch Lite and then fill out a config file. There is a [manual setup process](https://github.com/marcone/teslausb/blob/main-dev/doc/ManualSetup.md), but it is highly recommended to follow the instructions below. 
 
-There is a streamlined process for setting up the Pi which can currently be used if you plan to use Windows file shares, MacOS Sharing, or Samba on Linux for your video archive. [Instructions](doc/OneStepSetup.md).
+## Notes
 
-If you'd like to host the archive using another technology or would like to set the Pi up, yourself, continue these instructions.
+* Assumes your Pi has access to Wifi, with internet access (during setup). (But all setup methods do currently.) USB networking is still enabled for troubleshooting or manual setup
+* This image will work for either _headless_ (tested) or _manual_ (tested less) setup.
+* Currently not tested with the RSYNC/SFTP method when using headless setup.
 
-### Get the OS onto the MicroSD card
-[These instructions](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) tell you how to get Raspbian onto your MicroSD card. Basically:
-1. Connect your SD card to your computer.
-2. Use Etcher to write the zip file you downloaded to the SD card.
-   > Note: you don't need to uncompress the zip file you downloaded.
+## Configure the SD card before first boot of the Pi
 
-### Get a shell on the Pi
-Follow the instructions corresponding to the OS you used to flash the OS onto the MicroSD card:
-* Windows: [Instructions](doc/GetShellWithoutMonitorOnWindows.md).
-* MacOS or Linux: [Instructions](doc/GetShellWithoutMonitorOnLinux.md).
+1. Flash the [latest image release](https://github.com/marcone/teslausb/releases) using Etcher or similar.
 
-Whichever instructions you followed above will leave you in a command shell on the Pi. Use this shell for the rest of the steps in these instructions.
+### For headless (automatic) setup
 
-### Become root on the Pi
+1. Mount the card again, and in the `boot` directory create a `teslausb_setup_variables.conf` file to export the same environment variables normally needed for manual setup (including archive info, Wifi, and push notifications (if desired).
+A sample conf file is located in the `boot` folder on the SD card.
 
-First you need to get into a root shell on the Pi:
-```
-sudo -i
-```
+    The file should contain the entries below at a minimum, but **replace with your own values**. Be sure that your WiFi password is enclosed in single quotes, and that if it contains one or more single quote characters you replace each single quote character with a backslash followed by a single quote character.
 
-You'll stay in this root shell until you run the "halt" command in the "Set up USB storage functionality" below.
-
-### Set up the archive for dashcam clips
-Follow the instructions corresponding to the technology you'd like to use to host the archive for your dashcam clips. You must choose just one of these technologies; don't follow more than one of these sets of instructions:
-* Windows file share, MacOS Sharing, or Samba on Linux: [Instructions](doc/SetupShare.md).
-* SFTP/rsync: [Instructions](doc/SetupRSync.md)
-* **Experimental:** Google Drive, Amazon S3, DropBox, Microsoft OneDrive: [Instructions](doc/SetupRClone.md)
-
-### Optional: Allocate SD Card Storage
-Indicate how much of the drive you want to allocate to recording dashcam footage and music by running this command:
-
-```
- export camsize=<number or percentage>
-```
-
-For example, using `export camsize=100%` would allocate 100% of the space to recording footage from your car and would not create a separate music partition. `export camsize=50%` would allocate half of the space for a dashcam footage drive and allocates the other half to for a music storage drive, unless otherwise specified. If you don't set `camsize`, the script will allocate 90% of the total space to the dashcam by default. Size can be specified as a percentage or as an absolute value, e.g. `export camsize=16G` would allocate 16 gigabytes for dashcam footage.
-If you want limit music storage so it doesn't use up all the remaining storage after camera storage has been allocated, use `export musicsize=<number or percentage>` to specify the size.
-For example, if there is 100 gigabyte of free space, then
-```
- export camsize=50%
- export musicsize=10%
-```
-would allocate 50 gigabytes for camera and 10 gigabytes for music, leaving 40 gigabytes free.
-
-
-### Optional: Configure push notification via Pushover, Gotify, or IFTTT
-If you'd like to receive a notification when your Pi finishes archiving clips follow these [Instructions](doc/ConfigureNotificationsForArchive.md).
-
-### Optional: Configure a hostname
-The default network hostname for the Pi will become `teslausb`.  If you want to have more than one TeslaUSB devices on your network (for example you have more than one Tesla in your houseold), then you can specify an alternate hostname for the Pi by running this command:
-
-```
- export TESLAUSB_HOSTNAME=<new hostname>
-```
-
-For example, you could use `export TESLAUSB_HOSTNAME=teslausb-ModelX`
-
-Make sure that whatever you speicfy for the new hostname is compliant with the rules for DNS hostnames; for example underscore (_) is not allowed, but dash (-) is allowed.  Full rules are in RFC 1178 at https://tools.ietf.org/html/rfc1178
-
-### Set up the USB storage functionality
-1. Run these commands:
+    For example, if your password were
     ```
-    mkdir -p /root/bin
-    cd /root/bin
-    wget https://raw.githubusercontent.com/marcone/teslausb/main-dev/setup/pi/setup-teslausb
-    chmod +x setup-teslausb
-    ./setup-teslausb
+    a'b
     ```
-1. Run this command:
+    you would have
+
     ```
-    halt
+    export WIFIPASS='a\'b'
     ```
-1. Disconnect the Pi from the computer.
+If your WiFi SSID has spaces in its name, make sure they're escaped.
 
-On the next boot, the Pi hostname will become `teslausb`, so future `ssh` sessions will be `ssh pi@teslausb.local`.   If you specified your own hostname, be sure to use that name (for example `ssh pi@teslausb-ModelX.local`)
-
-Your Pi is now ready to be plugged into your Tesla. If you want to add music to the Pi, follow the instructions in the next section.
-
-## Optional: Add music to the Pi
-> Note: If you set `camsize` to `100%` then skip this step.
-
-Connect the Pi to a computer. If you're using a cable be sure to use the port labeled "USB" on the circuitboard.
-1. Wait for the Pi to show up on the computer as a USB drive.
-1. Copy any music you'd like to the drive labeled MUSIC.
-1. Eject the drives.
-1. Unplug the Pi from the computer.
-1. Plug the Pi into your Tesla.
-
-Alternatively, you can configure the Pi to automatically copy from a CIFS share. To do this, define the "musicsharename" variable to point at a CIFS share and folder. The share currently must exist on the same server as the one where recordings will be backed up, and use the same credentials. The Pi will sync down ALL music it finds under the specified folder, so be sure there is enough space on the Pi's music drive.
-For example, if you have your music on a share called 'Music', and on that share have a folder called 'CarMusic' where you copied all the songs that you want to have available in the car, use `export musicsharename=Music/CarMusic` in the setup file.
-
-
-## Optional: Making changes to the system after setup
-The setup process configures the Pi with read-only file systems for the operating system but with read-write
-access through the USB interface. This means that you'll be able to record dashcam video and add and remove
-music files but you won't be able to make changes to files on / or on /boot. This is to protect against
-corruption of the operating system when the Tesla cuts power to the Pi.
-
-To make changes to the system partitions:
+For example, if your SSID were
 ```
-ssh pi@teslausb.
-sudo -i
-/root/bin/remountfs_rw
+Foo Bar 2.4 GHz
 ```
-Then make whatever changes you need to. The next time the system boots the partitions will once again be read-only.
+you would use
+```
+export SSID=Foo\ Bar\ 2.4\ GHz
+```
+or
+```
+export SSID='Foo Bar 2.4 GHz'
+```
+
+Example file:
+
+    export ARCHIVE_SYSTEM=cifs
+    export archiveserver=Nautilus
+    export sharename=SailfishCam
+    export shareuser=sailfish
+    export sharepassword='pa$$w0rd'
+    export camsize=100%
+    # SSID of your 2.4 GHz network
+    export SSID='your_ssid'
+    export WIFIPASS='your_wifi_password'
+    export HEADLESS_SETUP=true
+    # export REPO=marcone
+    # export BRANCH=main-dev
+    # By default will use the main repo, but if you've been asked to test the image,
+    # these variables should be uncommunted and updated to point to the right repo/branch
+
+    # Set to either an actual timezone, or "auto" to attempt automatic timezone detection.
+    # If unset, defaults to the default Raspbian timezone, Europe/London (BST).
+    # export timezone=America/Los_Angeles
+
+    # By default there is a 20 second delay between connecting to wifi and
+    # starting the archiving of recorded clips. Uncomment this to change
+    # the duration of that delay
+    # export archivedelay=20
+
+    # export pushover_enabled=false
+    # export pushover_user_key=user_key
+    # export pushover_app_key=app_key
+
+    # export gotify_enabled=false
+    # export gotify_domain=https://gotify.domain.com
+    # export gotify_app_token=put_your_token_here
+    # export gotify_priority=5
+
+    # export ifttt_enabled=false
+    # export ifttt_event_name=put_your_event_name_here
+    # export ifttt_key=put_your_key_here
+
+    # TeslaUSB can optionally use the Tesla API to keep your car awake, so it can
+    # power the Pi long enough for the archiving process to complete. To enable
+    # that, please provide your Tesla account email and password below.
+    # TeslaUSB will only send your credentials to the Tesla API itself.
+    # export tesla_email=joeshmo@gmail.com
+    # export tesla_password=teslapass
+    # Please also provide your vehicle's VIN, so TeslaUSB can keep the correct
+    # vehicle awake.
+    # export tesla_vin=5YJ3E1EA4JF000001
+
+1. Boot it in your Pi, give it a bit, watching for a series of flashes (2, 3, 4, 5) and then a reboot and/or the CAM/music drives to become available on your PC/Mac. The LED flash stages are:
+
+| Stage (number of flashes)  |  Activity |
+|---|---|
+| 2 | Verify the requested configuration is creatable |
+| 3 | Grab scripts to start/continue setup |
+| 4 | Create partition and files to store camera clips/music) |
+| 5 | Setup completed; remounting filesystems as read-only and rebooting |
+
+The Pi should be available for `ssh` at `pi@teslausb.local`, over Wifi (if automatic setup works) or USB networking (if it doesn't). It takes about 5 minutes, or more depending on network speed, etc.
+
+If plugged into just a power source, or your car, give it a few minutes until the LED starts pulsing steadily which means the archive loop is running and you're good to go.
+
+You should see in `/boot` the `TESLAUSB_SETUP_FINISHED` and `WIFI_ENABLED` files as markers of headless setup success as well.
+
+### For manual setup
+
+1. After flashing the image, boot it in your Pi and:
+    *  connect via USB networking at `ssh pi@teslausb.local`. (The Pi must be connected to your PC and plugged into the port labeled USB on the Pi. Or...
+    * You can also just automate the Wifi portion of setup by creating the `boot/teslausb_setup_variables.conf` file and populating it with the `SSID` and `WIFIPASS` variables:
+    ```
+    export SSID=your_ssid
+    export WIFIPASS=your_wifi_pass
+    ```
+
+1. Once you have an `ssh` session, follow the steps starting at [Set up the USB storage functionality](https://github.com/marcone/teslausb#set-up-the-usb-storage-functionality) in the main guide.
+
+### Troubleshooting
+
+#### Headless (full or Wifi) setup
+* `ssh` to `pi@teslausb.local` (assuming Wifi came up, or your Pi is connected to your computer via USB) and look at the `/boot/teslausb-headless-setup.log`.
+* Try `sudo -i` and then run `/etc/rc.local`. The scripts are  fairly resilient to restarting and not re-running previous steps, and will tell you about progress/failure.
+* If Wifi didn't come up:
+    * Double-check the SSID and WIFIPASS variables in `teslausb_setup_variables.conf`, and remove `/boot/WIFI_ENABLED`, then booting the SD in your Pi to retry automatic Wifi setup.
+  * If still no go, re-run `/etc/rc.local`
+  * If all else fails, copy `/boot/wpa_supplicant.conf.sample` to `/boot/wpa_supplicant.conf` and edit out the `TEMP` variables to your desired settings.
+* (Note: if you get an error about `read-only filesystem`, you may have to `sudo -i` and run `/root/bin/remountfs_rw`.
+
+
+### Background information
+##### What happens under the covers
+
+When the Pi boots the first time:
+* A `/boot/teslausb-headless-setup.log` file will be created and stages logged.
+* Marker files will be created in `boot` like `TESLA_USB_SETUP_STARTED` and `TESLA_USB_SETUP_FINISHED` to track progress.
+* Wifi is detected by looking for `/boot/WIFI_ENABLED` and if not, creates the `wpa_supplicant.conf` file in place, using `SSID` and `WIFIPASS` from `teslausb_setup_variables.conf` and reboots.
+* The Pi LED will flash patterns (2, 3, 4, 5) as it gets to each stage (labeled in the setup-teslausb script).
+  * ~~10 flashes means setup failed!~~ (not currently working)
+* After the final stage and reboot the LED will go back to normal. Remember, the step to remount the filesystem takes a few minutes.
+
+At this point the next boot should start the Dashcam/music drives like normal. If you're watching the LED it will start flashing every 1 second, which is the archive loop running.
+
+> NOTE: Don't delete the `TESLAUSB_SETUP_FINISHED` or `WIFI_ENABLED` files. This is how the system knows setup is complete.
+
+### Image modification sources
+
+The sources for the image modifications, and instructions, are in the [pi-gen-sources folder](https://github.com/marcone/teslausb/tree/main-dev/pi-gen-sources).
 
 ## Meta
 This repo contains steps and scripts originally from [this thread on Reddit]( https://www.reddit.com/r/teslamotors/comments/9m9gyk/build_a_smart_usb_drive_for_your_tesla_dash_cam/)
