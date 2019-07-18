@@ -17,16 +17,16 @@ This is a streamlined process for setting up the Pi. You'll flash a preconfigure
 1. Mount the card again, and in the `boot` directory create a `teslausb_setup_variables.conf` file to export the same environment variables normally needed for manual setup (including archive info, Wifi, and push notifications (if desired).
 A sample conf file is located in the `boot` folder on the SD card.
 
-    The file should contain the entries below at a minimum, but **replace with your own values**. Be sure that your WiFi password is enclosed in single quotes, and that if it contains one or more single quote characters you replace each single quote character with a backslash followed by a single quote character.
+    The file should contain the entries below at a minimum, but **replace with your own values**. Be sure that your WiFi password is enclosed in single quotes, and that if it contains one or more single quote characters, forward or backward slashes, you escape these characters by adding a single backslash prior to the character.
 
     For example, if your password were
     ```
-    a'b
+    a'b-12/15
     ```
     you would have
 
     ```
-    export WIFIPASS='a\'b'
+    export WIFIPASS='a\'b-12\/15'
     ```
 If your WiFi SSID has spaces in its name, make sure they're escaped.
 
