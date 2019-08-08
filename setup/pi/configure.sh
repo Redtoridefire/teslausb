@@ -171,6 +171,13 @@ function install_archive_scripts () {
     fi
 }
 
+
+function install_python_packages () {
+  setup_progress "Installing python packages..."
+  apt-get --assume-yes install python3-pip
+  pip3 install boto3
+}
+
 function check_pushover_configuration () {
     if [ ! -z "${pushover_enabled+x}" ]
     then
@@ -296,6 +303,8 @@ function configure_sns () {
 
         echo "export sns_enabled=true" > /root/.teslaCamSNSTopicARN
         echo "export sns_topic_arn=$aws_sns_topic_arn" >> /root/.teslaCamSNSTopicARN
+
+        install_python_packages
     else
         echo "SNS not configured."
     fi
