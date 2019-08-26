@@ -385,10 +385,12 @@ function set_time () {
     sleep 2
   done
   log "Time still not set, attempting to force it"
+  systemctl stop ntp
   if ! ntpd -q -x -g
   then
     log "Failed to set time"
   fi
+  systemctl start ntp
 }
 
 export ARCHIVE_HOST_NAME
