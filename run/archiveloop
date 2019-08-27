@@ -268,7 +268,10 @@ function disconnect_usb_drives_from_host () {
 function archive_teslacam_clips () {
   log "Starting recording archiving..."
 
-  /root/bin/send-push-message "TeslaUSB:" "Archiving started at $(date)"
+  if [ $NOTIFY_ON_START = "true" ] 
+  then
+    /root/bin/send-push-message "TeslaUSB:" "Archiving started at $(date)"
+  fi
 
   ensure_cam_file_is_mounted
 
