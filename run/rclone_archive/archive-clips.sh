@@ -1,6 +1,6 @@
 #!/bin/bash -eu
 
-log "Moving clips to rclone archive..."
+log "Moving events/clips in SavedClips to rclone archive..."
 
 source /root/.teslaCamRcloneConfig
 
@@ -15,4 +15,4 @@ log "Moved $NUM_FILES_MOVED file(s)."
 /root/bin/send-push-message "TeslaUSB:" "Moved $NUM_FILES_MOVED dashcam file(s)."
 
 
-log "Finished moving clips to rclone archive"
+log "Finished moving events/clips to rclone archive"
