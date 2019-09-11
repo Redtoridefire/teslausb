@@ -208,15 +208,12 @@ As a little descussion of security for your Pi, please keep in mind the followin
 
 1. If WiFi Access Point is configured, the AP password needs to be worth while. Make it something better than Passw0rd, more than 8 characters (odd number of upper/lower characters, numbers are the best.) 
 
-2. Change the passwords for the root and pi accounts. To do that, make the system RW and use the passwd command to change the two passwords. To do that, follow the instructions below and reboot your Pi: (Starting at the pi sign-on)
+2. Change the password for the pi account. To do that, make the system RW and use the passwd command to change the password. To do that, follow the instructions below. The last command will reboot your Pi: (Starting at the pi sign-on)
 
 ```
    ssh pi@teslausb.local
    sudo -i
    cd bin
-   ./remountfs_rw
-   passwd pi
-   passwd
    reboot
 ```
 
