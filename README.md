@@ -214,6 +214,8 @@ As a little descussion of security for your Pi, please keep in mind the followin
    ssh pi@teslausb.local
    sudo -i
    cd bin
+   ./remountfs_rw
+   passwd pi
    reboot
 ```
 
