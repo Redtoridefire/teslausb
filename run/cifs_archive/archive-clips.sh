@@ -28,57 +28,58 @@ function connectionmonitor {
 
 function moveclips() {
   ROOT="$1"
-  PATTERN="$2"
+  SUB="$2"
+  PATTERN="$3"
 
-  if [ ! -d "$ROOT" ]
+  if [ ! -d "$ROOT/$SUB" ]
   then
-    log "$ROOT does not exist, skipping"
+    log "$ROOT/$SUB does not exist, skipping"
     return
   fi
 
   while read file_name
   do
-    if [ -d "$ROOT/$file_name" ]
+    if [ -d "$ROOT/$SUB/$file_name" ]
     then
       log "Creating output directory '$file_name'"
-      if ! mkdir -p "$ARCHIVE_MOUNT/$file_name"
+      if ! mkdir -p "$ARCHIVE_MOUNT/$SUB/$file_name"
       then
-        log "Failed to create '$file_name', check that archive server is writable and has free space"
+        log "Failed to create '$SUB/$file_name', check that archive server is writable and has free space"
         return
       fi
-    elif [ -f "$ROOT/$file_name" ]
+    elif [ -f "$ROOT/$SUB/$file_name" ]
     then
-      size=$(stat -c%s "$ROOT/$file_name")
+      size=$(stat -c%s "$ROOT/$SUB/$file_name")
       if [ $size -lt 100000 ]
       then
-        log "'$file_name' is only $size bytes"
-        rm "$ROOT/$file_name"
+        log "'$SUB/$file_name' is only $size bytes"
+        rm "$ROOT/$SUB/$file_name"
         NUM_FILES_DELETED=$((NUM_FILES_DELETED + 1))
       else
-        log "Moving '$file_name'"
+        log "Moving '$SUB/$file_name'"
         outdir=$(dirname "$file_name")
-        if mv -f "$ROOT/$file_name" "$ARCHIVE_MOUNT/$outdir"
+        if mv -f "$ROOT/$SUB/$file_name" "$ARCHIVE_MOUNT/$outdir"
         then
-          log "Moved '$file_name'"
+          log "Moved '$SUB/$file_name'"
           NUM_FILES_MOVED=$((NUM_FILES_MOVED + 1))
         else
-          log "Failed to move '$file_name'"
+          log "Failed to move '$SUB/$file_name'"
           NUM_FILES_FAILED=$((NUM_FILES_FAILED + 1))
         fi
       fi
     else
-      log "$file_name not found"
+      log "$SUB/$file_name not found"
     fi
-  done <<< $(cd "$ROOT"; find $PATTERN)
+  done <<< $(cd "$ROOT/$SUB"; find $PATTERN)
 }
 
 connectionmonitor $$ &
 
 # new file name pattern, firmware 2019.*
-moveclips "$CAM_MOUNT/TeslaCam/SavedClips" '*'
+moveclips "$CAM_MOUNT/TeslaCam" "SavedClips" '*'
 
 # v10 firmware adds a SentryClips folder
-moveclips "$CAM_MOUNT/TeslaCam/SentryClips" '*'
+moveclips "$CAM_MOUNT/TeslaCam" "SentryClips" '*'
 
 kill %1
 
