@@ -28,37 +28,37 @@ function connectionmonitor {
 
 function moveclips() {
   ROOT="$1"
-  SUB="$2"
-  PATTERN="$3"
+  PATTERN="$2"
+  SUB=$(basename $(dirname $ROOT))
 
-  if [ ! -d "$ROOT/$SUB" ]
+  if [ ! -d "$ROOT" ]
   then
-    log "$ROOT/$SUB does not exist, skipping"
+    log "$ROOT does not exist, skipping"
     return
   fi
 
   while read file_name
   do
-    if [ -d "$ROOT/$SUB/$file_name" ]
+    if [ -d "$ROOT/$file_name" ]
     then
-      log "Creating output directory '$file_name'"
+      log "Creating output directory '$SUB/$file_name'"
       if ! mkdir -p "$ARCHIVE_MOUNT/$SUB/$file_name"
       then
         log "Failed to create '$SUB/$file_name', check that archive server is writable and has free space"
         return
       fi
-    elif [ -f "$ROOT/$SUB/$file_name" ]
+    elif [ -f "$ROOT/$file_name" ]
     then
-      size=$(stat -c%s "$ROOT/$SUB/$file_name")
+      size=$(stat -c%s "$ROOT/$file_name")
       if [ $size -lt 100000 ]
       then
         log "'$SUB/$file_name' is only $size bytes"
-        rm "$ROOT/$SUB/$file_name"
+        rm "$ROOT/$file_name"
         NUM_FILES_DELETED=$((NUM_FILES_DELETED + 1))
       else
         log "Moving '$SUB/$file_name'"
         outdir=$(dirname "$file_name")
-        if mv -f "$ROOT/$SUB/$file_name" "$ARCHIVE_MOUNT/$SUB/$outdir"
+        if mv -f "$ROOT/$file_name" "$ARCHIVE_MOUNT/$SUB/$outdir"
         then
           log "Moved '$SUB/$file_name'"
           NUM_FILES_MOVED=$((NUM_FILES_MOVED + 1))
@@ -70,16 +70,16 @@ function moveclips() {
     else
       log "$SUB/$file_name not found"
     fi
-  done <<< $(cd "$ROOT/$SUB"; find $PATTERN)
+  done <<< $(cd "$ROOT"; find $PATTERN)
 }
 
 connectionmonitor $$ &
 
 # new file name pattern, firmware 2019.*
-moveclips "$CAM_MOUNT/TeslaCam" "SavedClips" '*'
+moveclips "$CAM_MOUNT/TeslaCam/SavedClips" '*'
 
 # v10 firmware adds a SentryClips folder
-moveclips "$CAM_MOUNT/TeslaCam" "SentryClips" '*'
+moveclips "$CAM_MOUNT/TeslaCam/SentryClips" '*'
 
 kill %1
 
