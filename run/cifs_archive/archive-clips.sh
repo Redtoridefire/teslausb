@@ -29,7 +29,7 @@ function connectionmonitor {
 function moveclips() {
   ROOT="$1"
   PATTERN="$2"
-  SUB=$(basename $(dirname $ROOT))
+  SUB=$(basename $ROOT)
 
   if [ ! -d "$ROOT" ]
   then
