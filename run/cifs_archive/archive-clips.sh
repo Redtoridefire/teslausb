@@ -58,7 +58,7 @@ function moveclips() {
       else
         log "Moving '$SUB/$file_name'"
         outdir=$(dirname "$file_name")
-        if mv -f "$ROOT/$SUB/$file_name" "$ARCHIVE_MOUNT/$outdir"
+        if mv -f "$ROOT/$SUB/$file_name" "$ARCHIVE_MOUNT/$SUB/$outdir"
         then
           log "Moved '$SUB/$file_name'"
           NUM_FILES_MOVED=$((NUM_FILES_MOVED + 1))
