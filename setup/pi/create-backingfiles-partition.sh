@@ -53,7 +53,7 @@ then
   else
     echo "LABEL=mutable $MUTABLE_MOUNTPOINT ext4 auto,rw 0 2" >> /etc/fstab
   fi
-  setup_progress "Mount Points updated /etc/fstab."
+  setup_progress "Done."
   exit 0
 else
   echo "usb_drive not set. Proceeding to SD card setup"
