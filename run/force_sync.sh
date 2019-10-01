@@ -12,11 +12,5 @@ do
   printf "Waiting for archiveloop to see canary file..\n"
   sleep 5
 done
-printf "Setting archive reachable..\n"
-if ! touch /tmp/archive-is-reachable
-then
-  printf "Something went wrong!  Error %d\nAborting.\n" "$?" 1>&2
-  exit 1
-fi
-printf "Done!  archiveloop process should now start its sync process automagically.\n"
+printf "Done!  archiveloop process should now start its sync process automagically as soon as it sees the archive.\n"
 
