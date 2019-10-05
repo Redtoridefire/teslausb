@@ -1,12 +1,40 @@
 #!/bin/bash -eu
 
-log "Copying music from  archive..."
+log "Copying music from archive..."
 
 NUM_FILES_COPIED=0
 NUM_FILES_SKIPPED=0
 NUM_FILES_ERROR=0
 SRC="/mnt/musicarchive"
 DST="/mnt/music"
+
+function connectionmonitor {
+  while true
+  do
+    for i in $(seq 1 10)
+    do
+      if timeout 3 /root/bin/archive-is-reachable.sh $ARCHIVE_HOST_NAME
+      then
+        # sleep and then continue outer loop
+        sleep 5
+        continue 2
+      fi
+    done
+    log "connection dead, killing archive-clips"
+    # The archive loop might be stuck on an unresponsive server, so kill it hard.
+    # (should be no worse than losing power in the middle of an operation)
+    kill -9 $1
+    return
+  done
+}
+
+if ! findmnt --mountpoint $DST
+then
+  log "$DST not mounted, skipping"
+  exit
+fi
+
+connectionmonitor $$ &
 
 while read file_name
 do
@@ -37,4 +65,11 @@ do
   fi
 done <<< "$(cd "$SRC"; find * -type f)"
 
+kill %1
+
 log "Copied $NUM_FILES_COPIED music file(s), skipped $NUM_FILES_SKIPPED previously-copied files, encountered $NUM_FILES_ERROR errors."
+
+if [ $NUM_FILES_COPIED -gt 0 ]
+then
+  /root/bin/send-push-message "TeslaUSB:" "Copied $NUM_FILES_COPIED music file(s), skipped $NUM_FILES_SKIPPED previously-copied files, encountered $NUM_FILES_ERROR errors."
+fi

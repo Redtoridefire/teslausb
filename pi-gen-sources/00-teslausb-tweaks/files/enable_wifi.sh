@@ -1,8 +1,8 @@
-#! /bin/bash -eu 
+#! /bin/bash -eu
 # This is a standalone script to just manually trigger
 # the steps to enable wifi so you don't have to run rc.local
 #
-# This is probably a model to follow, similar to some of the 
+# This is probably a model to follow, similar to some of the
 # reorganization work going on with the main scripts.
 
 HEADLESS_SETUP=false
@@ -34,14 +34,14 @@ function enable_wifi () {
         fi
         setup_progress "Wifi variables specified, and no /boot/WIFI_ENABLED. Building wpa_supplicant.conf."
         cp /boot/wpa_supplicant.conf.sample /boot/wpa_supplicant.conf
-        sed -i'.bak' -e "s/TEMPSSID/${SSID}/g" /boot/wpa_supplicant.conf
-        sed -i'.bak' -e "s/TEMPPASS/${WIFIPASS}/g" /boot/wpa_supplicant.conf
+        sed -i'.bak' -e "sTEMPSSID${SSID}g" /boot/wpa_supplicant.conf
+        sed -i'.bak' -e "sTEMPPASS${WIFIPASS}g" /boot/wpa_supplicant.conf
         cp /boot/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
         touch /boot/WIFI_ENABLED
         setup_progress "Rebooting..."
-        reboot 
+        reboot
       fi
-  else 
+  else
     echo "You need to export your desired SSID and WIFI pass like:"
     echo "  export SSID=your_ssid"
     echo "  export WIFIPASS=your_wifi_pass"

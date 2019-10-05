@@ -29,9 +29,12 @@ function get_script () {
   local local_path="$1"
   local name="$2"
   local remote_path="${3:-}"
-  
-  curl -o "$local_path/$name" https://raw.githubusercontent.com/"$REPO"/teslausb/"$BRANCH"/"$remote_path"/"$name"
-  # wget -O "$local_path/$name" https://raw.githubusercontent.com/"$REPO"/teslausb/"$BRANCH"/"$remote_path"/"$name"
+
+  while ! curl -o "$local_path/$name" https://raw.githubusercontent.com/"$REPO"/teslausb/"$BRANCH"/"$remote_path"/"$name"
+  do
+    setup_progress "get_script failed, retrying"
+    sleep 3
+  done
   chmod +x "$local_path/$name"
 }
 
@@ -47,12 +50,22 @@ function enable_wifi () {
         fi
         setup_progress "Wifi variables specified, and no /boot/WIFI_ENABLED. Building wpa_supplicant.conf."
         cp /boot/wpa_supplicant.conf.sample /boot/wpa_supplicant.conf
-        sed -i'.bak' -e "s/TEMPSSID/${SSID}/g" /boot/wpa_supplicant.conf
-        sed -i'.bak' -e "s/TEMPPASS/${WIFIPASS}/g" /boot/wpa_supplicant.conf
+        sed -i'.bak' -e "sTEMPSSID${SSID}g" /boot/wpa_supplicant.conf
+        sed -i'.bak' -e "sTEMPPASS${WIFIPASS}g" /boot/wpa_supplicant.conf
         cp /boot/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
+
+        # set the host name now if possible, so it's effective immediately after the reboot
+        local old_host_name=$(cat /etc/hostname)
+        if [[ ! -z "$TESLAUSB_HOSTNAME" ]] && [[ "$TESLAUSB_HOSTNAME" != "$old_host_name" ]]
+        then
+          local new_host_name="$TESLAUSB_HOSTNAME"
+          sed -i -e "s/$old_host_name/$new_host_name/g" /etc/hosts
+          sed -i -e "s/$old_host_name/$new_host_name/g" /etc/hostname
+        fi
+
         touch /boot/WIFI_ENABLED
         setup_progress "Rebooting..."
-        reboot 
+        reboot
       fi
   fi
 }
@@ -83,7 +96,7 @@ fi
 enable_wifi
 # Good to start setup at this point
 
-# This begins the Headless Setup loop 
+# This begins the Headless Setup loop
 # If the FINISHED file does not exist then we start setup. Otherwise passes on to normal loop
 if [ ! -e "/boot/TESLAUSB_SETUP_FINISHED" ] && [ $HEADLESS_SETUP = "true" ]
 then
@@ -92,7 +105,7 @@ then
     /root/bin/remountfs_rw
   fi
   touch "/boot/TESLAUSB_SETUP_STARTED"
- 
+
     # Grab the setup variables. Should still be there since setup isn't finished.
     # This is a double check to cover various scenarios of mixed headless/not headless setup attempts
     if [ -e "/boot/teslausb_setup_variables.conf" -a ! -e  "/root/teslausb_setup_variables.conf" ]
@@ -114,11 +127,11 @@ then
       mkdir "/root/bin"
     fi
 
-    if [ ! -e "/root/bin/setup-teslausb" ] 
+    if [ ! -e "/root/bin/setup-teslausb" ]
     then
       REPO=${REPO:-marcone}
       BRANCH=${BRANCH:-main-dev}
-      # Script doesn't exist, grab it. 
+      # Script doesn't exist, grab it.
       setup_progress "Grabbing main setup file."
       get_script /root/bin setup-teslausb setup/pi
     fi

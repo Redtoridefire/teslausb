@@ -1,11 +1,10 @@
 #!/bin/bash -eu
 
-NUM_FILES_MOVED="$1"
-TITLE="Dashcam Copy Complete"
-MESSAGE="$NUM_FILES_MOVED files(s) were copied."
+TITLE="$1"
+MESSAGE="$2"
 
 function log () {
-  echo "$( date )" >> "$LOG_FILE"
+  echo -n "$( date ): " >> "$LOG_FILE"
   echo "$1" >> "$LOG_FILE"
 }
 
@@ -30,11 +29,29 @@ function send_gotify () {
   -F "title=$TITLE" \
   -F "message=$MESSAGE" \
   -F "priority=$gotify_priority" \
-  "$gotify_domain/message?token=$gotify_app_token" 
+  "$gotify_domain/message?token=$gotify_app_token"
 }
 
-if [ $NUM_FILES_MOVED -gt 0 ]
-then
-  [ -r "/root/.teslaCamPushoverCredentials" ] && send_pushover
-  [ -r "/root/.teslaCamGotifySettings" ] && send_gotify
-fi
+function send_ifttt () {
+  log "Sending IFTTT message for moved files."
+
+  source /root/.teslaCamIftttSettings
+
+  curl -X POST \
+  -F "value1=$TITLE" \
+  -F "value2=$MESSAGE" \
+  "https://maker.ifttt.com/trigger/$ifttt_event_name/with/key/$ifttt_key"
+}
+
+function send_sns () {
+  log "Sending SNS message for moved files."
+
+  source /root/.teslaCamSNSTopicARN
+
+  python3 /root/bin/send_sns.py -t $sns_topic_arn -s "$TITLE" -m "$MESSAGE"
+}
+
+[ -r "/root/.teslaCamPushoverCredentials" ] && send_pushover
+[ -r "/root/.teslaCamGotifySettings" ] && send_gotify
+[ -r "/root/.teslaCamIftttSettings" ] && send_ifttt
+[ -r "/root/.teslaCamSNSTopicARN" ] && send_sns

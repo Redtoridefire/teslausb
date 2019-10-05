@@ -6,8 +6,21 @@ then
   return 1 # shouldn't use exit when sourced
 fi
 
+function log_progress () {
+  if typeset -f setup_progress > /dev/null; then
+    setup_progress "configure: $1"
+  fi
+  echo "configure: $1"
+}
+
 if [ "${FLOCKED:-}" != "$0" ]
 then
+  PARENT="$(ps -o comm= $PPID)"
+  if [ "$PARENT" != "setup-teslausb" ]
+  then
+    log_progress "WARNING: $0 not called from setup-teslausb: $PARENT"
+  fi
+
   if FLOCKED="$0" flock -en -E 99 "$0" "$0" "$@" || case "$?" in
   99) echo already running
       exit 99
@@ -26,17 +39,7 @@ BRANCH=${BRANCH:-main-dev}
 
 ARCHIVE_SYSTEM=${ARCHIVE_SYSTEM:-none}
 
-export INSTALL_DIR=${INSTALL_DIR:-/root/bin}
-
-
-function log_progress () {
-  if typeset -f setup_progress > /dev/null; then
-    setup_progress "configure: $1"
-  fi
-  echo "configure: $1"
-}
-
-log_progress "$0 starting with REPO=$REPO, BRANCH=$BRANCH, ARCHIVE_SYSTEM=$ARCHIVE_SYSTEM, INSTALL_DIR=$INSTALL_DIR"
+log_progress "$0 starting with REPO=$REPO, BRANCH=$BRANCH, ARCHIVE_SYSTEM=$ARCHIVE_SYSTEM"
 
 function check_variable () {
     local var_name="$1"
@@ -102,7 +105,7 @@ function check_archive_configs () {
         rclone)
             check_variable "RCLONE_DRIVE"
             check_variable "RCLONE_PATH"
-            export archiveserver="8.8.8.8" # since it's a cloud hosted drive we'll just set this to google dns    
+            export archiveserver="8.8.8.8" # since it's a cloud hosted drive we'll just set this to google dns
             ;;
         cifs)
             check_variable "sharename"
@@ -111,13 +114,14 @@ function check_archive_configs () {
             check_variable "archiveserver"
             ;;
         none)
+            export archiveserver=localhost
             ;;
         *)
             log_progress "STOP: Unrecognized archive system: $ARCHIVE_SYSTEM"
             exit 1
             ;;
     esac
-    
+
     log_progress "done"
 }
 
@@ -133,8 +137,11 @@ function get_archive_module () {
         cifs)
             echo "run/cifs_archive"
             ;;
+        none)
+            echo "run/none_archive"
+            ;;
         *)
-            echo "Internal error: Attempting to configure unrecognized archive system: $ARCHIVE_SYSTEM"
+            log_progress "Internal error: Attempting to configure unrecognized archive system: $ARCHIVE_SYSTEM"
             exit 1
             ;;
     esac
@@ -147,10 +154,16 @@ function install_archive_scripts () {
     log_progress "Installing base archive scripts into $install_path"
     get_script $install_path archiveloop run
     get_script $install_path remountfs_rw run
+    # Install the tesla_api.py script only if the user provided credentials for its use.
+    if [ ! -z ${tesla_email:+x} ]
+    then
+      get_script $install_path tesla_api.py run
+    else
+      log_progress "Skipping tesla_api.py install"
+    fi
 
     log_progress "Installing archive module scripts"
-    get_script /tmp verify-archive-configuration.sh $archive_module
-    get_script /tmp configure-archive.sh $archive_module
+    get_script /tmp verify-and-configure-archive.sh $archive_module
     get_script $install_path archive-clips.sh $archive_module
     get_script $install_path connect-archive.sh $archive_module
     get_script $install_path disconnect-archive.sh $archive_module
@@ -160,6 +173,13 @@ function install_archive_scripts () {
     then
       get_script $install_path copy-music.sh $archive_module
     fi
+}
+
+
+function install_python_packages () {
+  setup_progress "Installing python packages..."
+  apt-get --assume-yes install python3-pip
+  pip3 install boto3
 }
 
 function check_pushover_configuration () {
@@ -198,6 +218,43 @@ function check_gotify_configuration () {
     fi
 }
 
+function check_ifttt_configuration () {
+    if [ ! -z "${ifttt_enabled+x}" ]
+    then
+        if [ ! -n "${ifttt_event_name+x}" ] || [ ! -n "${ifttt_key+x}"  ]
+        then
+            log_progress "STOP: You're trying to setup IFTTT but didn't provide your Event Name and/or key."
+            log_progress "Define the variables like this:"
+            log_progress "export ifttt_event_name=put_your_event_name_here"
+            log_progress "export ifttt_key=put_your_key_here"
+            exit 1
+        elif [ "${ifttt_event_name}" = "put_your_event_name_here" ] || [  "${ifttt_key}" = "put_your_key_here" ]
+        then
+            log_progress "STOP: You're trying to setup IFTTT, but didn't replace the default Event Name and/or key values."
+            exit 1
+        fi
+    fi
+}
+
+function check_sns_configuration () {
+    if [ ! -z "${sns_enabled+x}" ]
+    then
+        if [ ! -n "${aws_access_key_id+x}" ] || [ ! -n "${aws_secret_key+x}" || [ ! -n "${aws_sns_topic_arn+x}"  ]
+        then
+            echo "STOP: You're trying to setup AWS SNS but didn't provide your User and/or App key and/or topic ARN."
+            echo "Define the variables like this:"
+            echo "export aws_access_key_id=put_your_accesskeyid_here"
+            echo "export aws_secret_key=put_your_secretkey_here"
+            echo "export aws_sns_topic_arn=put_your_sns_topicarn_here"
+            exit 1
+        elif [ "${aws_access_key_id}" = "put_your_accesskeyid_here" ] || [  "${aws_secret_key}" = "put_your_secretkey_here"  || [  "${aws_sns_topic_arn}" = "put_your_sns_topicarn_here" ]
+        then
+            echo "STOP: You're trying to setup SNS, but didn't replace the default values."
+            exit 1
+        fi
+    fi
+}
+
 function configure_pushover () {
     if [ ! -z "${pushover_enabled+x}" ]
     then
@@ -223,28 +280,70 @@ function configure_gotify () {
     fi
 }
 
+function configure_ifttt () {
+    if [ ! -z "${ifttt_enabled+x}" ]
+    then
+        log_progress "Enabling IFTTT"
+        echo "export ifttt_enabled=true" > /root/.teslaCamIftttSettings
+        echo "export ifttt_event_name=$ifttt_event_name" >> /root/.teslaCamIftttSettings
+        echo "export ifttt_key=$ifttt_key" >> /root/.teslaCamIftttSettings
+    else
+        log_progress "Gotify not configured."
+    fi
+}
+
+function configure_sns () {
+    if [ ! -z "${sns_enabled+x}" ]
+    then
+        echo "Enabling SNS"
+        mkdir /root/.aws
+
+        echo "[default]" > /root/.aws/credentials
+        echo "aws_access_key_id = $aws_access_key_id" >> /root/.aws/credentials
+        echo "aws_secret_access_key = $aws_secret_key" >> /root/.aws/credentials
+
+        echo "[default]" > /root/.aws/config
+        echo "region = $aws_region" >> /root/.aws/config
+
+        echo "export sns_enabled=true" > /root/.teslaCamSNSTopicARN
+        echo "export sns_topic_arn=$aws_sns_topic_arn" >> /root/.teslaCamSNSTopicARN
+
+        install_python_packages
+    else
+        echo "SNS not configured."
+    fi
+}
+
 function check_and_configure_pushover () {
     check_pushover_configuration
-    
+
     configure_pushover
 }
 
 function check_and_configure_gotify () {
     check_gotify_configuration
-    
+
     configure_gotify
+}
+
+function check_and_configure_ifttt () {
+    check_ifttt_configuration
+
+    configure_ifttt
+}
+
+
+function check_and_configure_sns () {
+    check_sns_configuration
+
+    configure_sns
 }
 
 function install_push_message_scripts() {
     local install_path="$1"
     get_script $install_path send-push-message run
+    get_script $install_path send_sns.py run
 }
-
-if [ "$ARCHIVE_SYSTEM" = "none" ]
-then
-    log_progress "Skipping archive configuration."
-    exit 0
-fi
 
 if ! [ $(id -u) = 0 ]
 then
@@ -252,16 +351,15 @@ then
     exit 1
 fi
 
-if [ ! -e "$INSTALL_DIR" ]
-then
-    mkdir "$INSTALL_DIR"
-fi
+mkdir -p /root/bin
 
 log_progress "Getting files from $REPO:$BRANCH"
 
 check_and_configure_pushover
 check_and_configure_gotify
-install_push_message_scripts "$INSTALL_DIR"
+check_and_configure_ifttt
+check_and_configure_sns
+install_push_message_scripts /root/bin
 
 check_archive_configs
 
@@ -271,11 +369,7 @@ echo "ARCHIVE_DELAY=${archivedelay:-20}" >> /root/teslausb.conf
 archive_module="$( get_archive_module )"
 log_progress "Using archive module: $archive_module"
 
-install_archive_scripts $INSTALL_DIR $archive_module
-/tmp/verify-archive-configuration.sh
-/tmp/configure-archive.sh
+install_archive_scripts /root/bin $archive_module
+/tmp/verify-and-configure-archive.sh
 
-install_rc_local "$INSTALL_DIR"
-
-
-
+install_rc_local /root/bin
