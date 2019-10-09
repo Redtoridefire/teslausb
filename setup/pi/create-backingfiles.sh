@@ -78,10 +78,14 @@ function add_drive () {
   fallocate -l "$size"K "$filename"
   echo "type=c" | sfdisk "$filename" > /dev/null
   local partition_offset=$(first_partition_offset "$filename")
-  losetup -o $partition_offset loop0 "$filename"
+  local next_dev_loop="$(losetup -f | cut -f3 -d /)"
+  echo "losetup -o $partition_offset $next_dev_loop "$filename""
+  losetup -o $partition_offset $next_dev_loop "$filename"
   log_progress "Creating filesystem with label '$label'"
-  mkfs.vfat /dev/loop0 -F 32 -n "$label"
-  losetup -d /dev/loop0
+  echo "mkfs.vfat $next_dev_loop -F 32 -n "$label""
+  mkfs.vfat /dev/$next_dev_loop -F 32 -n "$label"
+  echo "losetup -d $next_dev_loop"
+  losetup -d /dev/$next_dev_loop
 
   local mountpoint=/mnt/"$name"
 
