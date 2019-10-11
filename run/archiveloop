@@ -480,7 +480,8 @@ log "Starting archiveloop..."
 
 mount_all_snapshots
 
-if [[ -z "${SNAPSHOTS_DISABLED}" ]]; then
+if [ "$SNAPSHOTS_ENABLED" = "true" ]
+then
   /root/bin/make_snapshot.sh
   snapshotloop &
 fi
@@ -519,7 +520,8 @@ do
 
   sleep ${ARCHIVE_DELAY:-20}
 
-if [[ -z "${SNAPSHOTS_DISABLED}" ]]; then
+if [ "$SNAPSHOTS_ENABLED" = "true" ]
+then
   # take a snapshot before archive_clips starts deleting files
   /root/bin/make_snapshot.sh
 fi
