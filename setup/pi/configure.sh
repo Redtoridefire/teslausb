@@ -365,9 +365,9 @@ check_archive_configs
 
 configFile = /root/teslausb.conf
 
-echo "ARCHIVE_HOST_NAME=$archiveserver" > configFile
-echo "ARCHIVE_DELAY=${archivedelay:-20}" >> configFile
-echo "SNAPSHOTS_ENABLED=${SNAPSHOTS_ENABLED:-true}" >> configFile
+echo "ARCHIVE_HOST_NAME=$archiveserver" > $configFile
+echo "ARCHIVE_DELAY=${archivedelay:-20}" >> $configFile
+echo "SNAPSHOTS_ENABLED=${SNAPSHOTS_ENABLED:-true}" >> $configFile
 
 archive_module="$( get_archive_module )"
 log_progress "Using archive module: $archive_module"
