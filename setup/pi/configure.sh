@@ -107,8 +107,7 @@ function check_archive_configs () {
             check_variable "RCLONE_PATH"
             export archiveserver="8.8.8.8" # since it's a cloud hosted drive we'll just set this to google dns
             ;;
-        cifs)
-	cifsrsync)
+        cifs|cifsrsync)
             check_variable "sharename"
             check_variable "shareuser"
             check_variable "sharepassword"
