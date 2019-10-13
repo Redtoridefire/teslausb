@@ -28,12 +28,12 @@ function connectionmonitor {
 }
 
 function syncclips(){
-   log "function syncclips $1 ---> $(find $ROOT -mindepth 1  -type d ! -name \".\")"
+   log "function syncclips $1 ---> $(find $ROOT -mindepth 1  -type d)"
    ROOT="$1"
    DIR=$(basename $ROOT)
    mkdir -p $ARCHIVE_MOUNT/$DIR
 
-   for i in $(find $ROOT -mindepth 1 -type d ! -name "."); do
+   for i in $(find $ROOT -mindepth 1 -type d ); do
        log "Syncing $i to $ARCHIVE_MOUNT/$DIR"
        rsync -au $i $ARCHIVE_MOUNT/$DIR > /mutuable/rsync.log 2>&1
 	if [ $? -eq 0 ]; then
@@ -43,7 +43,7 @@ function syncclips(){
 	else
 		let fails=fails+1
 		log "rsync failed"
-                log $(cat /mutuable/rsync.log")
+                log $(cat /mutuable/rsync.log)
 	fi
 	let totals=totals+1
 	rm -f /mutuable/rsync.log
