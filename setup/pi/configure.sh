@@ -108,6 +108,7 @@ function check_archive_configs () {
             export archiveserver="8.8.8.8" # since it's a cloud hosted drive we'll just set this to google dns
             ;;
         cifs)
+	cifsrsync)
             check_variable "sharename"
             check_variable "shareuser"
             check_variable "sharepassword"
@@ -137,6 +138,9 @@ function get_archive_module () {
         cifs)
             echo "run/cifs_archive"
             ;;
+	cifsrsync)
+	    echo "run/cifsrsync_archive"
+	    ;;
         none)
             echo "run/none_archive"
             ;;
