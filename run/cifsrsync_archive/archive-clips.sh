@@ -1,6 +1,6 @@
 #!/bin/bash -eu
 
-log "Moving clips to archive..."
+log "syncing clips to archive..."
 
 success=0
 fails=0
@@ -28,12 +28,14 @@ function connectionmonitor {
 }
 
 function syncclips(){
+   log "function syncclips $1 ---> $(find $ROOT -mindepth 1  -type d ! -name \".\")"
    ROOT="$1"
    DIR=$(basename $ROOT)
    mkdir -p $ARCHIVE_MOUNT/$DIR
 
-   for i in $ROOT/*; do
-       rsync -avuz $i $ARCHIVE_MOUNT/$DIR
+   for i in $(find $ROOT -mindepth 1 -type d ! -name "."); do
+       log "Syncing $i to $ARCHIVE_MOUNT/$DIR"
+       rsync -au $i $ARCHIVE_MOUNT/$DIR > /mutuable/rsync.log 2>&1
 	if [ $? -eq 0 ]; then
 		rm -rf $i
        		log "synced dir $i"
@@ -41,16 +43,19 @@ function syncclips(){
 	else
 		let fails=fails+1
 		log "rsync failed"
+                log $(cat /mutuable/rsync.log")
 	fi
 	let totals=totals+1
+	rm -f /mutuable/rsync.log
    done
 }
 
 connectionmonitor $$ &
 
 # new file name pattern, firmware 2019.*
+log "syncing saved clips"
 syncclips "$CAM_MOUNT/TeslaCam/SavedClips" 
-
+log "now syncing sentry files"
 # v10 firmware adds a SentryClips folder
 syncclips "$CAM_MOUNT/TeslaCam/SentryClips" 
 
