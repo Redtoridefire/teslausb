@@ -28,8 +28,8 @@ function connectionmonitor {
 }
 
 function syncclips(){
-   log "function syncclips $1 ---> $(find $ROOT -mindepth 1  -type d)"
    ROOT="$1"
+   log "function syncclips $1 ---> $(find $ROOT -mindepth 1  -type d)"
    DIR=$(basename $ROOT)
    mkdir -p $ARCHIVE_MOUNT/$DIR
 
