@@ -1,10 +1,12 @@
 #!/bin/bash -eu
 
-log "Moving clips to archive..."
+log "syncing clips to archive..."
 
-NUM_FILES_MOVED=0
-NUM_FILES_FAILED=0
-NUM_FILES_DELETED=0
+success=0
+fails=0
+total=0
+totalFiles=0
+
 
 function connectionmonitor {
   while true
@@ -26,71 +28,46 @@ function connectionmonitor {
   done
 }
 
-function moveclips() {
-  ROOT="$1"
-  PATTERN="$2"
-  SUB=$(basename $ROOT)
+function syncclips(){
+   ROOT="$1"
+   #log "function syncclips $1 ---> $(find $ROOT -mindepth 1  -type d)"
+   DIR=$(basename $ROOT)
+   mkdir -p $ARCHIVE_MOUNT/$DIR
 
-  if [ ! -d "$ROOT" ]
-  then
-    log "$ROOT does not exist, skipping"
-    return
-  fi
-
-  while read file_name
-  do
-    if [ -d "$ROOT/$file_name" ]
-    then
-      log "Creating output directory '$SUB/$file_name'"
-      if ! mkdir -p "$ARCHIVE_MOUNT/$SUB/$file_name"
-      then
-        log "Failed to create '$SUB/$file_name', check that archive server is writable and has free space"
-        return
-      fi
-    elif [ -f "$ROOT/$file_name" ]
-    then
-      size=$(stat -c%s "$ROOT/$file_name")
-      if [ $size -lt 100000 ]
-      then
-        log "'$SUB/$file_name' is only $size bytes"
-        rm "$ROOT/$file_name"
-        NUM_FILES_DELETED=$((NUM_FILES_DELETED + 1))
-      else
-        log "Moving '$SUB/$file_name'"
-        outdir=$(dirname "$file_name")
-        if mv -f "$ROOT/$file_name" "$ARCHIVE_MOUNT/$SUB/$outdir"
-        then
-          log "Moved '$SUB/$file_name'"
-          NUM_FILES_MOVED=$((NUM_FILES_MOVED + 1))
-        else
-          log "Failed to move '$SUB/$file_name'"
-          NUM_FILES_FAILED=$((NUM_FILES_FAILED + 1))
-        fi
-      fi
-    else
-      log "$SUB/$file_name not found"
-    fi
-  done <<< $(cd "$ROOT"; find $PATTERN)
+   for i in $(find $ROOT -mindepth 1 -type d ); do
+       #log "Syncing $i to $ARCHIVE_MOUNT/$DIR"
+       num_files_moved=$(rsync -avuh --timeout=60 --remove-source-files --no-perms --stats --log-file=/mutable/rsync.log $i $ARCHIVE_MOUNT/$DIR | awk '/files transferred/{print $NF}')
+	if [ $? -eq 0 ]; then
+		rm -rf $i
+       		#log "synced dir $i"
+       		let success=success+1
+		let totalFiles=totalFiles+files_moved
+	else
+		let fails=fails+1
+		log "rsync failed"
+                log $(cat /mutable/rsync.log)
+	fi
+	let totals=totals+1
+	rm -f /mutable/rsync.log
+   done
 }
 
 connectionmonitor $$ &
 
 # new file name pattern, firmware 2019.*
-moveclips "$CAM_MOUNT/TeslaCam/SavedClips" '*'
-
+#log "syncing saved clips"
+syncclips "$CAM_MOUNT/TeslaCam/SavedClips" 
+#log "now syncing sentry files"
 # v10 firmware adds a SentryClips folder
-moveclips "$CAM_MOUNT/TeslaCam/SentryClips" '*'
+syncclips "$CAM_MOUNT/TeslaCam/SentryClips" 
 
 kill %1
 
-# delete empty directories under SavedClips and SentryClips
-rmdir --ignore-fail-on-non-empty "$CAM_MOUNT/TeslaCam/SavedClips"/* "$CAM_MOUNT/TeslaCam/SentryClips"/* || true
+log "successfully synced $success and removed dirs, failed on $fails, in total $total, files $totalFiles"
 
-log "Moved $NUM_FILES_MOVED file(s), failed to copy $NUM_FILES_FAILED, deleted $NUM_FILES_DELETED."
-
-if [ $NUM_FILES_MOVED -gt 0 ]
+if [ $success -gt 0 ]
 then
-  /root/bin/send-push-message "TeslaUSB:" "Moved $NUM_FILES_MOVED dashcam file(s), failed to copy $NUM_FILES_FAILED, deleted $NUM_FILES_DELETED."
+  /root/bin/send-push-message "TeslaUSB:" "successfully synced and removed $success dirs, failed on $fails, in total $total dirs and $totalFiles files were transfered"
 fi
 
-log "Finished moving clips to archive."
+log "Finished rsync over CIFS"
