@@ -41,7 +41,7 @@ function syncclips(){
 		rm -rf $i
        		#log "synced dir $i"
        		let success=success+1
-		let totalFiles=totalFiles+files_moved
+		let totalFiles=totalFiles+num_files_moved
 	else
 		let fails=fails+1
 		log "rsync failed"
