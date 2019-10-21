@@ -7,7 +7,7 @@ install -m 666 files/wpa_supplicant.conf.sample    "${ROOTFS_DIR}/boot/"
 install -d "${ROOTFS_DIR}/root/bin"
 install -m 755 files/enable_wifi.sh "${ROOTFS_DIR}/root/bin"
 
-on chroot << EOF
+on_chroot << EOF
 ln -s /etc/ssl/certs/ca-certificates.crt /usr/local/share/ca-certificates/ca-certificates.crt
 EOF
 
