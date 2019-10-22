@@ -9,10 +9,6 @@ install -m 755 files/enable_wifi.sh "${ROOTFS_DIR}/root/bin"
 # Fixes for CURL SSL issues
 install -m 644 files/curlssl.sh "${ROOTFS_DIR}/etc/profile.d/"
 
-on_chroot << EOF
-ln -s /etc/ssl/certs/ca-certificates.crt /usr/local/share/ca-certificates/ca-certificates.crt
-EOF
-
 # Below here is the rest of the stage2 (builds the Stretch lite image)
 # run script commented out just to give guidance on things that can be done.
 
