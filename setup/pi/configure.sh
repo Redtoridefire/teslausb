@@ -255,6 +255,25 @@ function check_sns_configuration () {
     fi
 }
 
+function check_discord_configuration () {
+    if [ ! -z "${discord_enabled+x}" ]
+    then
+        if [ ! -n "${discord_webhook_url+x}" ]
+        then
+            log_progress "STOP: You're trying to setup Discord but didn't provide Webhook URL."
+            log_progress "Define the variables like this:"
+            log_progress "export discord_webhook_url=https://discordapp.com/api/webhooks/xxxxxx/xxxxxxxxx"
+            exit 1
+        fi
+
+        if [  "${discord_webhook_url}" = "https://discordapp.com/api/webhooks/xxxxxx/xxxxxxxxx" ]
+        then
+            log_progress "STOP: You're trying to setup Discord, but didn't replace the default Webhook URL."
+            exit 1
+        fi
+    fi
+}
+
 function configure_pushover () {
     if [ ! -z "${pushover_enabled+x}" ]
     then
@@ -314,6 +333,17 @@ function configure_sns () {
     fi
 }
 
+function configure_discord () {
+    if [ ! -z "${discord_enabled+x}" ]
+    then
+        log_progress "Enabling Discord"
+        echo "export discord_enabled=true" > /root/.teslaCamDiscordSettings
+        echo "export discord_webhook_url=$discord_webhook_url" >> /root/.teslaCamDiscordSettings
+    else
+        log_progress "Discord not configured."
+    fi
+}
+
 function check_and_configure_pushover () {
     check_pushover_configuration
 
@@ -339,6 +369,12 @@ function check_and_configure_sns () {
     configure_sns
 }
 
+function check_and_configure_discord () {
+    check_discord_configuration
+
+    configure_discord
+}
+
 function install_push_message_scripts() {
     local install_path="$1"
     get_script $install_path send-push-message run
@@ -359,6 +395,7 @@ check_and_configure_pushover
 check_and_configure_gotify
 check_and_configure_ifttt
 check_and_configure_sns
+check_and_configure_discord
 install_push_message_scripts /root/bin
 
 check_archive_configs

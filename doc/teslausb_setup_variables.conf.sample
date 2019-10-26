@@ -97,6 +97,10 @@ export HEADLESS_SETUP=true
 # export aws_secret_key=put_your_secretkey_here
 # export aws_sns_topic_arn=put_your_sns_topicarn_here
 
+# Uncomment if setting up Discord notifications
+# export discord_enabled=true
+# export discord_webhook_url="https://discordapp.com/api/webhooks/xxxxxx/xxxxxxxxx"
+
 # TeslaUSB can optionally use the Tesla API to keep your car awake, so it can
 # power the Pi long enough for the archiving process to complete. To enable
 # that, please provide your Tesla account email and password below.

@@ -72,3 +72,13 @@ You can also choose to send notification through AWS SNS. You can create a free 
     export aws_sns_topic_arn=put_your_sns_topicarn_here
     ```
 
+# Discord 
+Send notifications to a Discord text channel through Discord Webhooks. 
+1. Select and edit a channel. 
+2. Go to Webhooks and create Webhook. 
+3. Copy the entire Webhook URL. 
+4. Run these commands, substituting your Webhook URL. 
+    ```
+    export discord_enabled=true
+    export discord_webhook_url="https://discordapp.com/api/webhooks/xxxxxx/xxxxxxxxx"
+    ```

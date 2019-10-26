@@ -51,7 +51,36 @@ function send_sns () {
   python3 /root/bin/send_sns.py -t $sns_topic_arn -s "$TITLE" -m "$MESSAGE"
 }
 
+function send_discord() {
+  log "Sending Discord message for moved files."
+
+  source /root/.teslaCamDiscordSettings
+
+  MSG_TIME=$(date --iso-8601=seconds)
+  MSG_USERNAME=${TITLE%?} # Remove ':' from title
+  AVATAR_URL='https://i.imgur.com/EuliK6R.png'
+
+  curl "$discord_webhook_url" \
+  -H "Content-Type: application/json" \
+  -X POST \
+  --data "$(cat << EOF
+  {
+    "username": "$MSG_USERNAME",
+    "avatar_url": "$AVATAR_URL",
+    "embeds": [
+        {
+            "color": 16711680,
+            "timestamp": "$MSG_TIME",
+            "fields": [{"name": "Message", "value": "$MESSAGE"}]
+        }
+    ]
+  }
+EOF
+)"  # Curl ends
+}
+
 [ -r "/root/.teslaCamPushoverCredentials" ] && send_pushover
 [ -r "/root/.teslaCamGotifySettings" ] && send_gotify
 [ -r "/root/.teslaCamIftttSettings" ] && send_ifttt
 [ -r "/root/.teslaCamSNSTopicARN" ] && send_sns
+[ -r "/root/.teslaCamDiscordSettings" ] && send_discord
