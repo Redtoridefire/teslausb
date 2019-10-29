@@ -31,6 +31,6 @@ These instructions will configure a Raspberry Pi so that you can proceed with th
     ```
     -- Files updated and ready for Wifi and SSH over USB --
     ```
-1. Eject the SD card safely, insert into your Pi, and reboot. If the Pi is connected over USB to your host, and/or if the Wifi setup went correctly, you should be able to `ssh pi@raspberrypi.local`. The default password is `raspberry`.
+1. Eject the SD card safely, insert into your Pi, and reboot. If the Pi is connected over USB to your host, and/or if the Wifi setup went correctly, you should be able to `ssh pi@teslausb.local`. The default password is `raspberry`.
 
-    > Note: If you receive an error indicating that the host id has changed, edit your computer's `~/.ssh/known_hosts` file. Find the line with the IP address of your Pi, or labeled "raspberrypi.local" and delete the entire line. You're especially likely to encounter this error if you're following these instructions for a second time.
+    > Note: If you receive an error indicating that the host id has changed, edit your computer's `~/.ssh/known_hosts` file. Find the line with the IP address of your Pi, or labeled "teslausb.local" and delete the entire line. You're especially likely to encounter this error if you're following these instructions for a second time.

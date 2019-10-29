@@ -198,7 +198,7 @@ corruption of the operating system when the Tesla cuts power to the Pi.
 
 To make changes to the system partitions:
 ```
-ssh pi@teslausb.
+ssh pi@teslausb.local
 sudo -i
 /root/bin/remountfs_rw
 ```

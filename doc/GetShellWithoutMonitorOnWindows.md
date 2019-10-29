@@ -35,7 +35,7 @@
 1. Wait for something labeled "USB Ethernet/RNDIS Gadget" to appear.
 1. Enter this command in your PowerShell window:
     ```
-    ssh pi@raspberrypi.local
+    ssh pi@teslausb.local
     ```
     > Note: If you receive an error indicating that the host id has changed and you can't work around it you'll need to delete the ~\\.ssh\known_hosts file. You're especially likely to encounter this error if you're following these instructions for a second time.
 1. If you get an "unknown host" error message install Bonjour: https://support.apple.com/kb/DL999 and go back to step 15.
