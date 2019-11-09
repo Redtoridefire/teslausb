@@ -14,7 +14,7 @@ log_progress "start"
 function append_cmdline_txt_param() {
   local toAppend="$1"
   # Don't add the option if it is already added.
-  # If the command line gets to long the pi won't boot.
+  # If the command line gets too long the pi won't boot.
   # Look for the option at the end ($) or in the middle
   # of the command line and surrounded by space (\s).
   if ! grep -P -q "\s${toAppend}(\$|\s)" /boot/cmdline.txt
