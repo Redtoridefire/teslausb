@@ -15,7 +15,7 @@ function verify_configuration () {
         exit 1
     fi
 
-    if ! rclone lsd "$RCLONE_DRIVE": | grep -q "$RCLONE_PATH"
+    if ! rclone lsd --max-depth 2 "$RCLONE_DRIVE": | grep -q "$RCLONE_PATH"
     then
         log_progress "STOP: Could not find the $RCLONE_DRIVE:$RCLONE_PATH"
         exit 1
