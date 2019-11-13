@@ -2,6 +2,6 @@
 
 FILE_PATH="$1"
 
-echo "user=$RSYNC_USER" > "$FILE_PATH"
-echo "server=$RSYNC_SERVER" >> "$FILE_PATH"
-echo "path=$RSYNC_PATH" >> "$FILE_PATH"
+echo "export user=$RSYNC_USER" > "$FILE_PATH"
+echo "export server=$RSYNC_SERVER" >> "$FILE_PATH"
+echo "export path=$RSYNC_PATH" >> "$FILE_PATH"
