@@ -26,6 +26,11 @@
     ```
 1. If you will use any public or insecure networks, be sure to update your password using the instructions at the end of this document.
 1. Enter the additional SSID and Pre-Shared Key of the WiFi network and repeat as necessary.
+1. Now let's make sure ssh is enabled for our first boot (mandatory for Rasbian Buster or newer):
+    1. Enter this command, replacing "changeme" with the drive letter you identified earlier:
+       ```
+       New-Item changeme:\ssh -type file
+       ```
 1. Eject the sd card.
 1. Move the sd card to the Pi.
 1. Connect a micro usb cable to the port labeled "USB" on the Raspberry Pi, and to the PC.
