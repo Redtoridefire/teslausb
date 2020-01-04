@@ -167,6 +167,7 @@ Make sure that whatever you speicfy for the new hostname is compliant with the r
     chmod +x setup-teslausb
     ./setup-teslausb
     ```
+    > Note: If the setup-teslausb command exits very quickly with only "adding country code to wpa_supplicant.conf", you can just run ```./setup-teslausb``` again.
 2. Run this command:
     ```
     halt
