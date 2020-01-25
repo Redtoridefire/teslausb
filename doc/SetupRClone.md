@@ -14,8 +14,8 @@ The easiest way to setup rclone is to:
 - edit "/root/teslausb_setup_variables.conf" and change the archive method to `rclone`
 - add the RCLONE_DRIVE and RCLONE_PATH variables to the config, according to the values you used when you configured the rclone remote:
   ```
-  export RCLONE_DRIVE="remotename"
-  export RCLONE_PATH="remotepathname"
+  export RCLONE_DRIVE=remotename
+  export RCLONE_PATH=remotepathname
   ```
 - run `/root/bin/setup-teslausb`
 
