@@ -1,0 +1,5 @@
+pi-gen/output/
+pi-gen/work/
+pi-gen/deploy/
+pi-gen/apt-cacher-ng/
+pi-gen/.git/objects/*
