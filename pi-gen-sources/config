@@ -1,3 +1,7 @@
 IMG_NAME=teslausb
 HOSTNAME=teslausb
 STAGE_LIST="stage0 stage1 stage2 stage_teslausb"
+TARGET_HOSTNAME=teslausb
+#FIRST_USER_NAME
+#FIRST_USER_PASS
+#Way to set a first user ssh key instead of a password?
