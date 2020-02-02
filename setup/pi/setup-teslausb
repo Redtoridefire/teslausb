@@ -191,6 +191,7 @@ function curlwrapper () {
   while ! curl --fail "$@"
   do
     setup_progress "'curl $*' failed, retrying" > /dev/null
+    c_rehash /etc/ssl/certs > /dev/null
     sleep 3
   done
 }
