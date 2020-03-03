@@ -167,6 +167,7 @@ function install_archive_scripts () {
 
 function install_python_packages () {
   setup_progress "Installing python packages..."
+  apt-get update
   apt-get --assume-yes install python3-pip
   pip3 install boto3
 }
