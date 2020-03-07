@@ -1,21 +1,37 @@
 #!/bin/bash -eu
 
-log "Moving clips to rclone archive..."
-
 source /root/.teslaCamRcloneConfig
+
+# If configured, send SNS message on each upload, useful for triggering an aws lambda
+function send_completed_sns () {
+  log "Sending SNS message $1 for completed upload."
+
+  source /root/.teslaCamSNSTopicARN
+
+  # shellcheck disable=SC2154
+  python3 /root/bin/send_sns.py -t "$sns_topic_arn" -s "TeslaCam Upload" -m "$1"
+}
+
+log "Moving clips to rclone archive..."
 
 FILE_COUNT=$(cd "$CAM_MOUNT"/TeslaCam && find . -maxdepth 3 -path './SavedClips/*' -type f -o -path './SentryClips/*' -type f | wc -l)
 
-if [ -d "$CAM_MOUNT"/TeslaCam/SavedClips ]
-then
-  # shellcheck disable=SC2154
-  rclone --config /root/.config/rclone/rclone.conf move "$CAM_MOUNT"/TeslaCam/SavedClips "$drive:$path"/SavedClips/ --create-empty-src-dirs --delete-empty-src-dirs >> "$LOG_FILE" 2>&1 || echo ""
-fi
-
-if [ -d "$CAM_MOUNT"/TeslaCam/SentryClips ]
-then
-  rclone --config /root/.config/rclone/rclone.conf move "$CAM_MOUNT"/TeslaCam/SentryClips "$drive:$path"/SentryClips/ --create-empty-src-dirs --delete-empty-src-dirs >> "$LOG_FILE" 2>&1 || echo ""
-fi
+for clipfolder in "$CAM_MOUNT"/TeslaCam/SavedClips "$CAM_MOUNT"/TeslaCam/SentryClips
+do
+  if [ -d "$clipfolder" ]; then
+    clipfolderbase="${clipfolder##*/}"
+    for folder in "$clipfolder"/*; do
+      if [ -d "${folder}" ]; then
+        folderbase="${folder##*/}"
+        log "rclone uploading $clipfolderbase/$folderbase"
+        # shellcheck disable=SC2154
+        rclone --config /root/.config/rclone/rclone.conf move "$clipfolder/$folderbase" "$drive:$path/$clipfolderbase/$folderbase" --create-empty-src-dirs --delete-empty-src-dirs >> "$LOG_FILE" 2>&1 || true
+        rmdir "$folder"
+        [ -r "/root/.teslaCamSNSTopicARN" ] && send_completed_sns "$clipfolderbase/$folderbase"
+      fi
+    done
+  fi
+done
 
 FILES_REMAINING=$(cd "$CAM_MOUNT"/TeslaCam && find . -maxdepth 3 -path './SavedClips/*' -type f -o -path './SentryClips/*' -type f | wc -l)
 NUM_FILES_MOVED=$((FILE_COUNT-FILES_REMAINING))
