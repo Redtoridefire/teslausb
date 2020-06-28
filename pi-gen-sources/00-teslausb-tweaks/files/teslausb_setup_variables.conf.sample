@@ -119,8 +119,8 @@ export HEADLESS_SETUP=true
 # export aws_sns_topic_arn=put_your_sns_topicarn_here
 
 # Uncomment if setting up Webhook notifications
-# export webhook_enabled=true
-# export webhook_url=http://domain/path
+# export WEBHOOK_ENABLED=true
+# export WEBHOOK_URL=http://domain/path
 
 # tesla_dashcam / Trigger file support.
 # Uncomment any trigger_file_xxxxx below if you'd like to create trigger file(s) in the

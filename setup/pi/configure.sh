@@ -227,15 +227,15 @@ function check_ifttt_configuration () {
 
 function check_webhook_configuration () {
     # shellcheck disable=SC2154
-    if [ -n "${webhook_enabled+x}" ]
+    if [ -n "${WEBHOOK_ENABLED+x}" ]
     then
-        if [ -z "${webhook_url+x}"  ]
+        if [ -z "${WEBHOOK_URL+x}"  ]
         then
             log_progress "STOP: You're trying to setup a Webhook but didn't provide your webhook url."
             log_progress "Define the variable like this:"
-            log_progress "export webhook_url=http://domain/path/"
+            log_progress "export WEBHOOK_URL=http://domain/path/"
             exit 1
-        elif [ "${webhook_url}" = "http://domain/path/" ]
+        elif [ "${WEBHOOK_URL}" = "http://domain/path/" ]
         then
             log_progress "STOP: You're trying to setup a Webhook, but didn't replace the default url."
             exit 1
@@ -308,12 +308,12 @@ function configure_ifttt () {
 }
 
 function configure_webhook () {
-    if [ -n "${webhook_enabled+x}" ]
+    if [ -n "${WEBHOOK_ENABLED+x}" ]
     then
         log_progress "Enabling Webhook"
         {
-            echo "export webhook_enabled=true"
-            echo "export webhook_url=$webhook_url"
+            echo "export WEBHOOK_ENABLED=true"
+            echo "export WEBHOOK_URL=$WEBHOOK_URL"
         } > /root/.teslaCamWebhookSettings
     else
         log_progress "Webhook not configured."

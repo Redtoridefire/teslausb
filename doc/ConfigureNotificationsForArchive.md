@@ -79,7 +79,7 @@ Generic Webhook call can be used with Node-Red, [Home-Assistant](https://home-as
 1. Setup webhook url with your provider
 2. Run these commands, substituting your url.
     ```
-    export webhook_enabled=true
-    export webhook_url=http://domain/path
+    export WEBHOOK_ENABLED=true
+    export WEBHOOK_URL=http://domain/path
     ```
 

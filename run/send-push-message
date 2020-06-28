@@ -63,7 +63,7 @@ function send_webhook () {
   # shellcheck disable=SC2154
   curl -X POST \
     -d "{\"value1\":\"${TITLE}\",\"value2\":\"${MESSAGE}\"}" \
-    "$webhook_url"
+    "$WEBHOOK_URL"
 }
 
 [ -r "/root/.teslaCamPushoverCredentials" ] && send_pushover
