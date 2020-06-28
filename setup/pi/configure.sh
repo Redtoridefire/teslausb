@@ -310,7 +310,7 @@ function configure_ifttt () {
 function configure_webhook () {
     if [ -n "${webhook_enabled+x}" ]
     then
-        log_progress "Enabling WEebhook"
+        log_progress "Enabling Webhook"
         {
             echo "export webhook_enabled=true"
             echo "export webhook_url=$webhook_url"
@@ -390,6 +390,7 @@ mkdir -p /root/bin
 check_and_configure_pushover
 check_and_configure_gotify
 check_and_configure_ifttt
+check_and_configure_webhook
 check_and_configure_sns
 install_push_message_scripts /root/bin
 
