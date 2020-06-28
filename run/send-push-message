@@ -57,12 +57,12 @@ function send_sns () {
 
 function send_webhook () {
   log "Sending Webhook message for moved files."
-  echo "sending webhook"
+  
   source /root/.teslaCamWebhookSettings
 
   # shellcheck disable=SC2154
-  echo curl -X POST \
-    -d '{"value1":"'$TITLE'","value2":"'$MESSAGE'"}' \
+  curl -X POST \
+    -d "{\"value1\":\"${TITLE}\",\"value2\":\"${MESSAGE}\"}" \
     $webhook_url
 }
 
