@@ -288,6 +288,22 @@ function disconnect_usb_drives_from_host () {
   log "Disconnected usb from host."
 }
 
+function convert_seconds_to_nice_time () {
+  ((h=${1}/3600))
+  ((m=(${1}%3600)/60))
+  ((s=${1}%60))
+
+  if [ $h -gt 0 ]
+  then
+    printf "%dh%dm%ds" $h $m $s
+  elif [ $m -gt 0 ]
+  then
+    printf "%dm%ds" $m $s
+  else
+    printf "%ds" $s
+  fi
+}
+
 function archive_teslacam_clips () {
   log "Checking saved folder count..."
 
@@ -301,6 +317,7 @@ function archive_teslacam_clips () {
   if [ "$DIR_COUNT" -gt 0 ]
   then
     log "Starting recording archiving: $DIR_COUNT event folder(s) with $FILE_COUNT file(s)"
+    START_TS=$(date --utc --date "now" +%s)
 
     /root/bin/send-push-message "TeslaUSB:" "Archiving $DIR_COUNT event folder(s) with $FILE_COUNT file(s) starting at $(date)"
 
@@ -339,6 +356,10 @@ function archive_teslacam_clips () {
         /root/bin/tesla_api.py disable_sentry_mode &>> ${LOG_FILE}
       fi
     fi
+
+    END_TS=$(date --utc --date "now" +%s)
+    DIFF=$((END_TS - START_TS))
+    /root/bin/send-push-message "TeslaUSB:" "Archiving finished in $(convert_seconds_to_nice_time $DIFF)"
   fi
 
   # Trim the camera archive to reduce the number of blocks in the snapshot.
