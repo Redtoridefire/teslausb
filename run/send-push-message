@@ -55,6 +55,18 @@ function send_sns () {
   python3 /root/bin/send_sns.py -t "$sns_topic_arn" -s "$TITLE" -m "$MESSAGE"
 }
 
+function send_telegram () {
+  log "Sending Telegram message for moved files."
+
+  source /root/.teslaCamTelegramSettings
+
+  curl -v -H "Content-Type: application/json" -d \
+  '{"chat_id": "'$telegram_chat_id'", "text": "'"$TITLE $MESSAGE"'", "disable_notification": '$telegram_silent_notify' }' \
+  https://api.telegram.org/$telegram_bot_token/sendMessage
+
+  
+}
+
 function send_webhook () {
   log "Sending Webhook message for moved files."
   
@@ -71,3 +83,4 @@ function send_webhook () {
 [ -r "/root/.teslaCamIftttSettings" ] && send_ifttt
 [ -r "/root/.teslaCamSNSTopicARN" ] && send_sns
 [ -r "/root/.teslaCamWebhookSettings" ] && send_webhook
+[ -r "/root/.teslaCamTelegramSettings" ] && send_telegram

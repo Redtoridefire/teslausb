@@ -263,6 +263,24 @@ function check_sns_configuration () {
     fi
 }
 
+function check_telegram_configuration () {
+    if [ -n "${telegram_enabled+x}" ]
+    then
+        if [ -z "${telegram_bot_token+x}"  ] || [ -z "${telegram_chat_id:+x}" ]
+        then
+            log_progress "STOP: You're trying to setup Telegram but didn't provide your Bot Token or Chat id."
+            echo "Define the variables in config file like this:"
+            echo "export telegram_chat_id=123456789"
+            echo "export telegram_bot_token=bot123456789:abcdefghijklmnopqrstuvqxyz987654321"
+            exit 1
+        elif [ "${telegram_bot_token}" = "bot123456789:abcdefghijklmnopqrstuvqxyz987654321" ] || [ "${telegram_chat_id}" = "123456789" ]
+        then
+            log_progress "STOP: You're trying to setup Telegram, but didn't replace the default values."
+            exit 1
+        fi
+    fi
+}
+
 function configure_pushover () {
     if [ -n "${pushover_enabled+x}" ]
     then
@@ -304,6 +322,21 @@ function configure_ifttt () {
         } > /root/.teslaCamIftttSettings
     else
         log_progress "IFTTT not configured."
+    fi
+}
+
+function configure_telegram () {
+    if [ -n "${telegram_enabled+x}" ]
+    then
+        log_progress "Enabling Telegram"
+        {
+            echo "export telegram_enabled=true"
+            echo "export telegram_chat_id=$telegram_chat_id"
+            echo "export telegram_bot_token=$telegram_bot_token"
+            echo "export telegram_silent_notify=$telegram_silent_notify"
+        } > /root/.teslaCamTelegramSettings
+    else
+        log_progress "Telegram not configured."
     fi
 }
 
@@ -367,6 +400,12 @@ function check_and_configure_webhook () {
     configure_webhook
 }
 
+function check_and_configure_telegram () {
+    check_telegram_configuration
+
+    configure_telegram
+}
+
 function check_and_configure_sns () {
     check_sns_configuration
 
@@ -391,6 +430,7 @@ check_and_configure_pushover
 check_and_configure_gotify
 check_and_configure_ifttt
 check_and_configure_webhook
+check_and_configure_telegram
 check_and_configure_sns
 install_push_message_scripts /root/bin
 

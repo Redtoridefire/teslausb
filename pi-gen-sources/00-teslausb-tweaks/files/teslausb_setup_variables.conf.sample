@@ -118,6 +118,12 @@ export HEADLESS_SETUP=true
 # export aws_secret_key=put_your_secretkey_here
 # export aws_sns_topic_arn=put_your_sns_topicarn_here
 
+# Uncomment if setting up Telegram notifications
+# export telegram_enabled=true
+# export telegram_chat_id=123456789
+# export telegram_bot_token=bot123456789:abcdefghijklmnopqrstuvqxyz987654321
+# export telegram_silent_notify=false
+
 # Uncomment if setting up Webhook notifications
 # export WEBHOOK_ENABLED=true
 # export WEBHOOK_URL=http://domain/path
