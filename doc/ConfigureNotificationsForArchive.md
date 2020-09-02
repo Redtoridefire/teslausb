@@ -90,8 +90,8 @@ You can choose to send notifications via [Telegram](https://telegram.org/). This
 2. If the API key does not have the "bot" prefix. Make sure you add it. See example below. 
 3. Run these commands, substituting your url.
     ```
-    export telegram_enabled=true
-    export telegram_chat_id=123456789
-    export telegram_bot_token=bot123456789:abcdefghijklmnopqrstuvqxyz987654321
-    export telegram_silent_notify=false
+    export TELEGRAM_ENABLED=true
+    export TELEGRAM_CHAT_ID=123456789
+    export TELEGRAM_BOT_TOKEN=bot123456789:abcdefghijklmnopqrstuvqxyz987654321
+    export TELEGRAM_SILENT_NOTIFY=false
     ```

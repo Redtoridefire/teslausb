@@ -61,8 +61,8 @@ function send_telegram () {
   source /root/.teslaCamTelegramSettings
 
   curl -v -H "Content-Type: application/json" -d \
-  '{"chat_id": "'$telegram_chat_id'", "text": "'"$TITLE $MESSAGE"'", "disable_notification": '$telegram_silent_notify' }' \
-  https://api.telegram.org/$telegram_bot_token/sendMessage
+  '{"chat_id": "'"$TELEGRAM_CHAT_ID"'", "text": "'"$TITLE $MESSAGE"'", "disable_notification": '"$TELEGRAM_SILENT_NOTIFY"' }' \
+  https://api.telegram.org/"$TELEGRAM_BOT_TOKEN"/sendMessage
 
   
 }

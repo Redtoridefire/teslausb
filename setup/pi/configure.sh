@@ -264,16 +264,16 @@ function check_sns_configuration () {
 }
 
 function check_telegram_configuration () {
-    if [ -n "${telegram_enabled+x}" ]
+    if [ -n "${TELEGRAM_ENABLED+x}" ]
     then
-        if [ -z "${telegram_bot_token+x}"  ] || [ -z "${telegram_chat_id:+x}" ]
+        if [ -z "${TELEGRAM_BOT_TOKEN+x}"  ] || [ -z "${TELEGRAM_CHAT_ID:+x}" ]
         then
             log_progress "STOP: You're trying to setup Telegram but didn't provide your Bot Token or Chat id."
             echo "Define the variables in config file like this:"
-            echo "export telegram_chat_id=123456789"
-            echo "export telegram_bot_token=bot123456789:abcdefghijklmnopqrstuvqxyz987654321"
+            echo "export TELEGRAM_CHAT_ID=123456789"
+            echo "export TELEGRAM_BOT_TOKEN=bot123456789:abcdefghijklmnopqrstuvqxyz987654321"
             exit 1
-        elif [ "${telegram_bot_token}" = "bot123456789:abcdefghijklmnopqrstuvqxyz987654321" ] || [ "${telegram_chat_id}" = "123456789" ]
+        elif [ "${TELEGRAM_BOT_TOKEN}" = "bot123456789:abcdefghijklmnopqrstuvqxyz987654321" ] || [ "${TELEGRAM_CHAT_ID}" = "123456789" ]
         then
             log_progress "STOP: You're trying to setup Telegram, but didn't replace the default values."
             exit 1
@@ -326,14 +326,14 @@ function configure_ifttt () {
 }
 
 function configure_telegram () {
-    if [ -n "${telegram_enabled+x}" ]
+    if [ -n "${TELEGRAM_ENABLED+x}" ]
     then
         log_progress "Enabling Telegram"
         {
-            echo "export telegram_enabled=true"
-            echo "export telegram_chat_id=$telegram_chat_id"
-            echo "export telegram_bot_token=$telegram_bot_token"
-            echo "export telegram_silent_notify=$telegram_silent_notify"
+            echo "export TELEGRAM_ENABLED=true"
+            echo "export TELEGRAM_CHAT_ID=$TELEGRAM_CHAT_ID"
+            echo "export TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN"
+            echo "export TELEGRAM_SILENT_NOTIFY=$TELEGRAM_SILENT_NOTIFY"
         } > /root/.teslaCamTelegramSettings
     else
         log_progress "Telegram not configured."
