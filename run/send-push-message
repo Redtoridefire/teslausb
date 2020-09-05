@@ -56,10 +56,9 @@ function send_sns () {
 }
 
 function send_telegram () {
-  log "Sending Telegram message for moved files."
-
   if [ -n "${TELEGRAM_ENABLED+x}" ]
   then
+    log "Sending Telegram message for moved files."
     curl -v -H "Content-Type: application/json" -d \
       '{"chat_id": "'"$TELEGRAM_CHAT_ID"'", "text": "'"$TITLE $MESSAGE"'", "disable_notification": '"$TELEGRAM_SILENT_NOTIFY"' }' \
       https://api.telegram.org/"$TELEGRAM_BOT_TOKEN"/sendMessage
