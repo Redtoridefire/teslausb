@@ -66,6 +66,7 @@ function check_archive_configs () {
             check_variable "SHARE_NAME"
             check_variable "SHARE_USER"
             check_variable "SHARE_PASSWORD"
+			check_variable "SHARE_DOMAIN"
             check_variable "ARCHIVE_SERVER"
             ;;
         none)

@@ -25,6 +25,7 @@ function read_setup_variables {
   newnamefor[musicsize]=MUSIC_SIZE
   newnamefor[sharename]=SHARE_NAME
   newnamefor[shareuser]=SHARE_USER
+  newnamefor[sharedomain]=SHARE_DOMAIN
   newnamefor[sharepassword]=SHARE_PASSWORD
   newnamefor[tesla_email]=TESLA_EMAIL
   newnamefor[tesla_password]=TESLA_PASSWORD
