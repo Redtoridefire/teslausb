@@ -27,6 +27,7 @@ function read_setup_variables {
   newnamefor[shareuser]=SHARE_USER
   newnamefor[sharedomain]=SHARE_DOMAIN
   newnamefor[sharepassword]=SHARE_PASSWORD
+  newnamefor[domainenable]=DOMAIN_ENABLE
   newnamefor[tesla_email]=TESLA_EMAIL
   newnamefor[tesla_password]=TESLA_PASSWORD
   newnamefor[tesla_vin]=TESLA_VIN
