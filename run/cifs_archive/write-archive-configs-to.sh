@@ -2,7 +2,7 @@
 
 FILE_PATH="$1"
 
-if [ -z "$DOMAIN_ENABLE" ]; then
+if [[ "$DOMAIN_ENABLE" = false ]]; then
   (
     echo "username=$SHARE_USER"
     echo "password=$SHARE_PASSWORD"

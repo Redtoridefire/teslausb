@@ -66,9 +66,7 @@ function check_archive_configs () {
             check_variable "SHARE_NAME"
             check_variable "SHARE_USER"
             check_variable "SHARE_PASSWORD"
-			if [ -z "$DOMAIN_ENABLE" ]; then
-			  echo "Domain Not Enabled"
-			else 
+			if [[ "$DOMAIN_ENABLE" = true ]]; then
 			  check_variable "SHARE_DOMAIN"  
 			fi
             check_variable "ARCHIVE_SERVER"
