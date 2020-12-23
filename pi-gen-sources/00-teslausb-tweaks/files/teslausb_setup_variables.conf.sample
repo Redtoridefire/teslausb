@@ -18,6 +18,13 @@ export SHARE_USER=username
 export SHARE_PASSWORD=password
 # export cifs_version="3.0"
 
+
+# Variables for DOMAIN (NETBIOS) sharing setup
+#export DOMAIN_ENABLE=true
+#export SHARE_DOMAIN=<DOMAIN>
+
+
+
 # The following option is only for the Pi4. If you wish to boot the Pi4 from
 # sd card, but store recordings on a USB drive or SSD, uncomment the following
 # line. If you don't plan on using an sd card at all (i.e. you are both booting
