@@ -105,7 +105,7 @@ then
   fi
   check_archive_mountable "$ARCHIVE_SERVER" "$musicsharename"
 fi
-
+# shellcheck disable=SC2154
 if [ -n "${boomboxsharename:+x}" ]
 then
   if [ "$BOOMBOX_SIZE" = "0" ]
@@ -122,7 +122,7 @@ function configure_archive () {
 
   local archive_path="/mnt/archive"
   local music_archive_path="/mnt/musicarchive"
-  local boombox_archive_path="mnt/boomboxarchive"
+  local boombox_archive_path="/mnt/boomboxarchive"
 
   if [ ! -e "$archive_path" ]
   then
