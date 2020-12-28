@@ -12,10 +12,11 @@ log_progress "starting"
 
 CAM_SIZE="$1"
 MUSIC_SIZE="$2"
+BOOMBOX_SIZE="$3"
 # strip trailing slash that shell autocomplete might have added
 BACKINGFILES_MOUNTPOINT="${3/%\//}"
 
-log_progress "cam: $CAM_SIZE, music: $MUSIC_SIZE, mountpoint: $BACKINGFILES_MOUNTPOINT"
+log_progress "cam: $CAM_SIZE, music: $MUSIC_SIZE,  boombox: $BOOMBOX_SIZE, mountpoint: $BACKINGFILES_MOUNTPOINT"
 
 G_MASS_STORAGE_CONF_FILE_NAME=/etc/modprobe.d/g_mass_storage.conf
 
@@ -119,10 +120,17 @@ function create_default_entries () {
     touch /mnt/music/.metadata_never_index
     umount /mnt/music
   fi
+  if [ -e /mnt/boombox ]
+  then
+    mount /mnt/boombox
+    touch /mnt/boombox/.metadata_never_index
+    umount /mnt/boombox
+  fi
 }
 
 CAM_DISK_FILE_NAME="$BACKINGFILES_MOUNTPOINT/cam_disk.bin"
 MUSIC_DISK_FILE_NAME="$BACKINGFILES_MOUNTPOINT/music_disk.bin"
+BOOMBOX_DISK_FILE_NAME="$BACKINGFILES_MOUNTPOINT/boombox_disk.bin"
 
 # delete existing files, because fallocate doesn't shrink files, and
 # because they interfere with the percentage-of-free-space calculation
@@ -142,13 +150,16 @@ killall archiveloop || true
 modprobe -r g_mass_storage
 umount -d /mnt/cam || true
 umount -d /mnt/music || true
+umount -d /mnt/boombox || true
 umount -d /backingfiles/snapshots/snap*/mnt || true
 rm -f "$CAM_DISK_FILE_NAME"
 rm -f "$MUSIC_DISK_FILE_NAME"
+rm -f "$BOOMBOX_DISK_FILE_NAME"
 rm -rf "$BACKINGFILES_MOUNTPOINT/snapshots"
 
 CAM_DISK_SIZE="$(calc_size "$CAM_SIZE")"
 MUSIC_DISK_SIZE="$(calc_size "$MUSIC_SIZE")"
+BOOMBOX_DISK_SIZE="$(calc_size "$BOOMBOX_SIZE")"
 
 add_drive "cam" "CAM" "$CAM_DISK_SIZE" "$CAM_DISK_FILE_NAME"
 log_progress "created camera backing file"
@@ -171,6 +182,24 @@ then
 else
   echo "options g_mass_storage file=$CAM_DISK_FILE_NAME removable=1 ro=0 stall=0 iSerialNumber=123456" > "$G_MASS_STORAGE_CONF_FILE_NAME"
 fi
+
+REMAINING_SPACE="$(available_space)"
+
+if ["$BOOMBOX_DISK_SIZE" -gt "$REMAINING_SPACE"]
+then
+  BOOMBOX_DISK_SIZE = "$REMAINING_SPACE"
+fi
+
+if [ "$REMAINING_SPACE" -ge 1024 ] && [ "$BOOMBOX_DISK_SIZE" -gt 0 ]
+then
+  add_drive "boombox" "BOOMBOX" "$BOOMBOX_DISK_SIZE" "$BOOMBOX_DISK_FILE_NAME"
+  log_progress "created boombox backing file"
+  echo "options g_mass_storage file=$BOOMBOX_DISK_FILE_NAME,$CAM_DISK_FILE_NAME removable=1,1 ro=0,0 stall=0 iSerialNumber=123456" > "$G_MASS_STORAGE_CONF_FILE_NAME"
+else
+  echo "options g_mass_storage file=$CAM_DISK_FILE_NAME removable=1 ro=0 stall=0 iSerialNumber=123456" > "$G_MASS_STORAGE_CONF_FILE_NAME"
+fi
+
+
 
 create_default_entries
 log_progress "done"

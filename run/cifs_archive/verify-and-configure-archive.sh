@@ -160,7 +160,7 @@ function configure_archive () {
     fi
     if ! grep -w -q "$boombox_archive_path" /etc/fstab
     then
-      local musicsharenameforstab="${boomboxsharename// /\\040}"
+      local boomboxsharenameforstab="${boomboxsharename// /\\040}"
       echo "//$ARCHIVE_SERVER/$boomboxsharenameforstab $boombox_archive_path cifs noauto,credentials=${credentials_file_path},iocharset=utf8,file_mode=0777,dir_mode=0777,$VERS_OPT,$SEC_OPT 0" >> /etc/fstab
     fi
   fi

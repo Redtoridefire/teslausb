@@ -159,6 +159,11 @@ function install_archive_scripts () {
   then
     get_script "$install_path" copy-music.sh "$archive_module"
   fi
+   # shellcheck disable=SC2154
+  if [ -n "${boomboxsharename:+x}" ] && grep cifs <<< "$archive_module"
+  then
+    get_script "$install_path" copy-boombox.sh "$archive_module"
+  fi
 }
 
 
