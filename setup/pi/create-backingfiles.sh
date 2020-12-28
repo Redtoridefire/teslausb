@@ -185,7 +185,7 @@ fi
 
 REMAINING_SPACE="$(available_space)"
 
-if ["$BOOMBOX_DISK_SIZE" -gt "$REMAINING_SPACE"]
+if [ "$BOOMBOX_DISK_SIZE" -gt "$REMAINING_SPACE" ]
 then
   BOOMBOX_DISK_SIZE = "$REMAINING_SPACE"
 fi
