@@ -120,11 +120,9 @@ function configure_archive () {
   local credentials_file_path="/root/.teslaCamArchiveCredentials"
   /tmp/write-archive-configs-to.sh "$credentials_file_path"
 
-  if ! grep -w -q "$archive_path" /etc/fstab
-  then
-    local sharenameforstab="${SHARE_NAME// /\\040}"
-    echo "//$ARCHIVE_SERVER/$sharenameforstab $archive_path cifs noauto,credentials=${credentials_file_path},iocharset=utf8,file_mode=0777,dir_mode=0777,$VERS_OPT,$SEC_OPT 0" >> /etc/fstab
-  fi
+  sed -i "/$archive_path/ d" /etc/fstab
+  local sharenameforstab="${SHARE_NAME// /\\040}"
+  echo "//$ARCHIVE_SERVER/$sharenameforstab $archive_path cifs noauto,credentials=${credentials_file_path},iocharset=utf8,file_mode=0777,dir_mode=0777,$VERS_OPT,$SEC_OPT 0" >> /etc/fstab
 
   if [ -n "${musicsharename:+x}" ]
   then
@@ -132,11 +130,9 @@ function configure_archive () {
     then
       mkdir "$music_archive_path"
     fi
-    if ! grep -w -q "$music_archive_path" /etc/fstab
-    then
-      local musicsharenameforstab="${musicsharename// /\\040}"
-      echo "//$ARCHIVE_SERVER/$musicsharenameforstab $music_archive_path cifs noauto,credentials=${credentials_file_path},iocharset=utf8,file_mode=0777,dir_mode=0777,$VERS_OPT,$SEC_OPT 0" >> /etc/fstab
-    fi
+    sed -i "/$music_archive_path/ d" /etc/fstab
+    local musicsharenameforstab="${musicsharename// /\\040}"
+    echo "//$ARCHIVE_SERVER/$musicsharenameforstab $music_archive_path cifs noauto,credentials=${credentials_file_path},iocharset=utf8,file_mode=0777,dir_mode=0777,$VERS_OPT,$SEC_OPT 0" >> /etc/fstab
   fi
 
   # update fstab if it doesn't already use "noauto" for the archive(s)
