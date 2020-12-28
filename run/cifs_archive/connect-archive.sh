@@ -20,6 +20,17 @@ function ensure_archive_is_mounted () {
       return 1
     fi
   fi
+  if [ -e "$BOOMBOX_ARCHIVE_MOUNT" ]
+  then
+    log "Ensuring BoomBox archive is mounted..."
+    if ensure_mountpoint_is_mounted_with_retry "$BOOMBOX_ARCHIVE_MOUNT"
+    then
+      log "Ensured BoomBox archive is mounted."
+    else
+      log "Failed to mount BoomBox archive."
+      return 1
+    fi
+  fi
 }
 
 ensure_archive_is_mounted

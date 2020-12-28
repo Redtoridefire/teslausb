@@ -22,5 +22,13 @@
       log "unmount failed"
     fi
   fi
+  if [ -e "$BOOMBOX_ARCHIVE_MOUNT" ]
+  then
+    log "unmounting $BOOMBOX_ARCHIVE_MOUNT"
+    if ! umount -f -l "$BOOMBOX_ARCHIVE_MOUNT"
+    then
+      log "unmount failed"
+    fi
+  fi
 } &
 

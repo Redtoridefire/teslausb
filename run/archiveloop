@@ -28,8 +28,11 @@ export LOG_FILE=/mutable/archiveloop.log
 
 export CAM_MOUNT=/mnt/cam
 export MUSIC_MOUNT=/mnt/music
+export BOOMBOX_MOUNT=/mnt/boombox
 export ARCHIVE_MOUNT=/mnt/archive
 export MUSIC_ARCHIVE_MOUNT=/mnt/musicarchive
+export BOOMBOX_ARCHIVE_MOUNT=/mnt/boomboxarchive
+
 
 function log () {
   echo -n "$( date ): " >> "$LOG_FILE"
@@ -194,6 +197,12 @@ function ensure_music_file_is_mounted () {
   log "Ensured music drive is mounted."
 }
 
+function ensure_boombox_file_is_mounted () {
+  log "Ensuring boombox backing file is mounted..."
+  ensure_mountpoint_is_mounted_with_retry "$BOOMBOX_MOUNT"
+  log "Ensured boombox drive is mounted."
+}
+
 function unmount_mount_point () {
   local mount_point="$1"
   log "Unmounting $mount_point..."
@@ -217,6 +226,10 @@ function unmount_cam_file () {
 
 function unmount_music_file () {
   unmount_mount_point "$MUSIC_MOUNT"
+}
+
+function unmount_boombox_file () {
+  unmount_mount_point "$BOOMBOX_MOUNT"
 }
 
 function wait_for_archive_to_be_unreachable () {
@@ -283,6 +296,10 @@ function mount_and_fix_errors_in_files () {
   if [ -e /backingfiles/music_disk.bin ]
   then
     fix_errors_in_image /backingfiles/music_disk.bin
+  fi
+  if [ -e /backingfiles/boombox_disk.bin ]
+  then
+    fix_errors_in_image /backingfiles/boombox_disk.bin
   fi
 }
 
@@ -410,6 +427,19 @@ function copy_music_files () {
   unmount_music_file
 }
 
+function copy_boombox_files () {
+  log "Starting boombox sync..."
+
+  ensure_boombox_file_is_mounted
+
+  /root/bin/copy-boombox.sh
+
+  # Trim the empty space from the music archive.
+  trim_free_space "$BOOMBOX_MOUNT"
+
+  unmount_boombox_file
+}
+
 function archive_clips () {
   log "Archiving..."
 
@@ -438,6 +468,20 @@ function archive_clips () {
   else
     log "Music archive not configured or unreachable"
   fi
+
+   if timeout 5 [ -d "$BOOMBOX_ARCHIVE_MOUNT" -a -d "$BOOMBOX_MOUNT" ]
+  then
+    log "Copying boombox..."
+    if copy_boombox_files
+    then
+      log "Finished copying boombox."
+    else
+      log "Copying boombox failed."
+    fi
+  else
+    log "boombox archive not configured or unreachable"
+  fi
+
 
   /root/bin/disconnect-archive.sh
 }

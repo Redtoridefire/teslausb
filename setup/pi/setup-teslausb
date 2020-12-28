@@ -23,6 +23,7 @@ function read_setup_variables {
   newnamefor[archiveserver]=ARCHIVE_SERVER
   newnamefor[camsize]=CAM_SIZE
   newnamefor[musicsize]=MUSIC_SIZE
+  newnamefor[boomboxsize]=BOOMBOX_SIZE
   newnamefor[sharename]=SHARE_NAME
   newnamefor[shareuser]=SHARE_USER
   newnamefor[sharepassword]=SHARE_PASSWORD
@@ -55,6 +56,7 @@ function read_setup_variables {
   INCREASE_ROOT_SIZE=${INCREASE_ROOT_SIZE:-0}
   export CAM_SIZE=${CAM_SIZE:-90%}
   export MUSIC_SIZE=${MUSIC_SIZE:-0}
+  export BOOMBOX_SIZE=${BOOMBOX_SIZE:-0}
   export USB_DRIVE=${USB_DRIVE:-''}
 }
 
@@ -276,7 +278,7 @@ function create_usb_drive_backing_files () {
   if [ ! -e $BACKINGFILES_MOUNTPOINT/cam_disk.bin ]
   then
     setup_progress "Creating backing disk files."
-    /tmp/create-backingfiles.sh "$CAM_SIZE" "$MUSIC_SIZE" "$BACKINGFILES_MOUNTPOINT"
+    /tmp/create-backingfiles.sh "$CAM_SIZE" "$MUSIC_SIZE" "$BOOMBOX_SIZE" "$BACKINGFILES_MOUNTPOINT"
   else
     # mount cam image and make sure the right directories exist
     umount /mnt/cam || true
@@ -436,8 +438,8 @@ function cmd_upgrade_prepare {
   service smbd stop || true
   service autofs stop || true
   umount /backingfiles/snapshots/snap*/mnt || true
-  umount /mnt/cam /mnt/music || true
-  umount /mnt/archive /mnt/musicarchive || true
+  umount /mnt/cam /mnt/music /mnt/boombox || true
+  umount /mnt/archive /mnt/musicarchive /mnt/boomboxarchive || true
   modprobe -r g_mass_storage
   /root/bin/remountfs_rw > /dev/null
 }
@@ -574,6 +576,13 @@ function cmd_diagnose {
       parted -s /backingfiles/music_disk.bin print || true
     else
       echo "no music disk image found"
+    fi
+    if [ -f /backingfiles/boombox_disk.bin ]
+    then
+      echo "boombox disk image has $(filefrag /backingfiles/boombox_disk.bin | awk '{print $2}') extents"
+      parted -s /backingfiles/boombox_disk.bin print || true
+    else
+      echo "no boombox disk image found"
     fi
 
     echo -e "====== network ======"

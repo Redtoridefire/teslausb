@@ -106,11 +106,23 @@ then
   check_archive_mountable "$ARCHIVE_SERVER" "$musicsharename"
 fi
 
+if [ -n "${boomboxsharename:+x}" ]
+then
+  if [ "$BOOMBOX_SIZE" = "0" ]
+  then
+    log_progress "STOP: boomboxsharename specified but no boombox drive size specified"
+    exit 1
+  fi
+  check_archive_mountable "$ARCHIVE_SERVER" "$boomboxsharename"
+fi
+
+
 function configure_archive () {
   log_progress "Configuring the archive..."
 
   local archive_path="/mnt/archive"
   local music_archive_path="/mnt/musicarchive"
+  local boombox_archive_path="mnt/boomboxarchive"
 
   if [ ! -e "$archive_path" ]
   then
@@ -136,6 +148,20 @@ function configure_archive () {
     then
       local musicsharenameforstab="${musicsharename// /\\040}"
       echo "//$ARCHIVE_SERVER/$musicsharenameforstab $music_archive_path cifs noauto,credentials=${credentials_file_path},iocharset=utf8,file_mode=0777,dir_mode=0777,$VERS_OPT,$SEC_OPT 0" >> /etc/fstab
+    fi
+  fi
+
+  #boomboxshare
+   if [ -n "${boomboxsharename:+x}" ]
+  then
+    if [ ! -e "$boombox_archive_path" ]
+    then
+      mkdir "$boombox_archive_path"
+    fi
+    if ! grep -w -q "$boombox_archive_path" /etc/fstab
+    then
+      local musicsharenameforstab="${boomboxsharename// /\\040}"
+      echo "//$ARCHIVE_SERVER/$boomboxsharenameforstab $boombox_archive_path cifs noauto,credentials=${credentials_file_path},iocharset=utf8,file_mode=0777,dir_mode=0777,$VERS_OPT,$SEC_OPT 0" >> /etc/fstab
     fi
   fi
 
