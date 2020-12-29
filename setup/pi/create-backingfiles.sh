@@ -116,6 +116,7 @@ function create_default_entries () {
   if [ -e /mnt/music ]
   then
     mount /mnt/music
+    mkdir /mnt/BOOMBOX
     touch /mnt/music/.metadata_never_index
     umount /mnt/music
   fi
