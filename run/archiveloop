@@ -554,6 +554,8 @@ fi
 
 mount_and_fix_errors_in_files
 
+sleep 20
+
 if archive_is_reachable
 then
   fastblink
