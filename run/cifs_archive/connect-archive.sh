@@ -15,7 +15,7 @@ function ensure_archive_is_mounted () {
     if ensure_mountpoint_is_mounted_with_retry "$MUSIC_ARCHIVE_MOUNT"
     then
       log "Ensured music archive is mounted."
-      mkdir -p "$MUSIC_ARCHIVE_MOUNT/BOOMBOX"
+      mkdir -p "$MUSIC_ARCHIVE_MOUNT/Boombox"
     else
       log "Failed to mount music archive."
       return 1
