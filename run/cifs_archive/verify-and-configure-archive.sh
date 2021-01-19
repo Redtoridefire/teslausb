@@ -120,7 +120,7 @@ function configure_archive () {
   local credentials_file_path="/root/.teslaCamArchiveCredentials"
   /tmp/write-archive-configs-to.sh "$credentials_file_path"
 
-  sed -i "/$archive_path/ d" /etc/fstab
+  sed -i "/^.*\.teslaCamArchiveCredentials.*$/ d" /etc/fstab
   local sharenameforstab="${SHARE_NAME// /\\040}"
   echo "//$ARCHIVE_SERVER/$sharenameforstab $archive_path cifs noauto,credentials=${credentials_file_path},iocharset=utf8,file_mode=0777,dir_mode=0777,$VERS_OPT,$SEC_OPT 0" >> /etc/fstab
 
@@ -130,7 +130,6 @@ function configure_archive () {
     then
       mkdir "$music_archive_path"
     fi
-    sed -i "/$music_archive_path/ d" /etc/fstab
     local musicsharenameforstab="${musicsharename// /\\040}"
     echo "//$ARCHIVE_SERVER/$musicsharenameforstab $music_archive_path cifs noauto,credentials=${credentials_file_path},iocharset=utf8,file_mode=0777,dir_mode=0777,$VERS_OPT,$SEC_OPT 0" >> /etc/fstab
   fi
