@@ -15,11 +15,13 @@ The easiest way to to configure teslausb for rclone is:
 - install rclone: `curl https://rclone.org/install.sh | sudo bash`
 - configure rclone for your chosen storage service: `rclone config`, then follow the instructions from [rclone.org](https://rclone.org/)
 - edit "/root/teslausb_setup_variables.conf" and change the archive method to `rclone`
-- add the RCLONE_DRIVE and RCLONE_PATH variables to the config, according to the values you used when you configured the rclone remote.  
+- add the RCLONE_DRIVE and RCLONE_PATH variables to the config, according to the values you used when you configured the rclone remote.
   RCLONE_DRIVE should be a name shown by `rclone listremotes`, and RCLONE_PATH should be a path that exists on the named remote, i.e. `rclone ls "$RCLONE_DRIVE:$RCLONE_PATH"` should not print an error (but it may print nothing, if the path is newly created and currently empty).
+- optionally add RCLONE_FLAGS with optional flags to add to the command.
   ```
   export RCLONE_DRIVE="remotename"
   export RCLONE_PATH="remotepathname"
+  export RCLONE_FLAGS=""
   ```
 - run `/root/bin/setup-teslausb`
 
