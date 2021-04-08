@@ -841,6 +841,17 @@ then
   echo "source /root/bin/setup-teslausb" >> /root/.bashrc
 fi
 
+# UX courtesy reminders
+if ! grep -q remount /root/.bashrc
+then
+  echo "echo \"Use bin/remountfs_rw to allow changes.\"" >> /root/.bashrc
+fi
+
+if ! grep -q sudo /home/pi/.bashrc
+then
+  echo  "echo \"Use sudo -i to enable making changes to the system. Useful files are in /mutable/\"" >> /home/pi/.bashrc
+fi
+
 make_root_fs_readonly
 
 upgrade_packages
