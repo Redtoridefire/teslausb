@@ -115,7 +115,7 @@ Matrix is a federated messaging protocol that can be used via [Matrix.org](https
     export MATRIX_ROOM='put_the_matrix_target_room_id_here'
     ```
 
-#Slack
+# Slack
 Notifications can be sent via webhook to channels or DM in Slack.
 
 1. Go to https://api.slack.com and click "Create a custom app"
