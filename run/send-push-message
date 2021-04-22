@@ -61,8 +61,7 @@ function send_webhook () {
 
 function send_slack () {
   log "Sending Slack message."
-  
-  payload="{\"text\":\"*$title*\n$message\",\"username\": \"Tesla\",\"icon_emoji\": \":tesla:\"}"
+  payload="{\"text\":\"$message\",\"username\": \"Tesla\",\"icon_emoji\": \":tesla:\"}"
   curl -X POST --data-urlencode "payload=$payload" "$SLACK_WEBHOOK_URL"
 }
 
