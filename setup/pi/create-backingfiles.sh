@@ -165,7 +165,7 @@ rm -rf "$BACKINGFILES_MOUNTPOINT/snapshots"
 if [ "$USE_EXFAT" = true  ]
 then
   # Check if kernel supports ExFAT 
-  if ! lsmod | grep -q exfat &> /dev/null
+  if ! modprobe -n exfat &> /dev/null
   then
     log_progress "kernel does not support ExFAT FS. Reverting to FAT32."
     USE_EXFAT=false
