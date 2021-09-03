@@ -164,11 +164,18 @@ rm -rf "$BACKINGFILES_MOUNTPOINT/snapshots"
 
 if [ "$USE_EXFAT" = true  ]
 then
-  # install exfatprogs if needed
-  if ! hash mkfs.exfat &> /dev/null
+  # Check if kernel supports ExFAT 
+  if ! lsmod | grep -q exfat &> /dev/null
   then
-    /root/bin/remountfs_rw
-    apt install -y exfatprogs
+    log_progress "kernel does not support ExFAT FS. Reverting to FAT32."
+    USE_EXFAT=false
+  else
+    # install exfatprogs if needed
+    if ! hash mkfs.exfat &> /dev/null
+    then
+      /root/bin/remountfs_rw
+      apt install -y exfatprogs
+    fi
   fi
 fi
 
