@@ -28,7 +28,7 @@ function send_discord() {
 
   curl -H "Content-Type: application/json" -d \
     '{"username": "TeslaUSB", "content": "'"$message"'"}' \
-    $DISCORD_WEBHOOK_URL
+    "$DISCORD_WEBHOOK_URL"
 }
 
 function send_ifttt () {
