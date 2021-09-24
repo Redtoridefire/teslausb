@@ -46,8 +46,6 @@ function read_setup_variables {
   newnamefor[ifttt_enabled]=IFTTT_ENABLED
   newnamefor[ifttt_event_name]=IFTTT_EVENT_NAME
   newnamefor[ifttt_key]=IFTTT_KEY
-  newnamefor[discord_enabled]=DISCORD_ENABLED
-  newnamefor[discord_webhook_url]=DISCORD_WEBHOOK_URL
   newnamefor[sns_enabled]=SNS_ENABLED
   newnamefor[aws_region]=AWS_REGION
   newnamefor[aws_access_key_id]=AWS_ACCESS_KEY_ID
