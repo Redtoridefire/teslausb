@@ -3,8 +3,10 @@
 # Adapted from https://github.com/adafruit/Raspberry-Pi-Installer-Scripts/blob/master/read-only-fs.sh
 
 function log_progress () {
-  if typeset -f setup_progress > /dev/null; then
+  if declare -F setup_progress > /dev/null
+  then
     setup_progress "make-root-fs-readonly: $1"
+    return
   fi
   echo "make-root-fs-readonly: $1"
 }
@@ -23,8 +25,12 @@ function append_cmdline_txt_param() {
   fi
 }
 
+log_progress "Disabling unnecessary service..."
+systemctl disable apt-daily.timer
+systemctl disable apt-daily-upgrade.timer
+
 log_progress "Removing unwanted packages..."
-apt-get remove -y --force-yes --purge triggerhappy logrotate dphys-swapfile
+apt-get remove -y --force-yes --purge triggerhappy logrotate dphys-swapfile bluez alsa-utils
 apt-get -y --force-yes autoremove --purge
 # Replace log management with busybox (use logread if needed)
 log_progress "Installing ntp and busybox-syslogd..."
@@ -41,40 +47,58 @@ append_cmdline_txt_param ro
 rm -f /var/swap
 
 # Move fake-hwclock.data to /mutable directory so it can be updated
-if ! findmnt --mountpoint /mutable
+if ! findmnt --mountpoint /mutable > /dev/null
 then
-    log_progress "Mounting the mutable partition..."
-    mount /mutable
-    log_progress "Mounted."
+  log_progress "Mounting the mutable partition..."
+  mount /mutable
+  log_progress "Mounted."
 fi
 if [ ! -e "/mutable/etc" ]
 then
-    mkdir -p /mutable/etc
+  mkdir -p /mutable/etc
 fi
 
 if [ ! -L "/etc/fake-hwclock.data" ] && [ -e "/etc/fake-hwclock.data" ]
 then
-    log_progress "Moving fake-hwclock data"
-    mv /etc/fake-hwclock.data /mutable/etc/fake-hwclock.data
-    ln -s /mutable/etc/fake-hwclock.data /etc/fake-hwclock.data
+  log_progress "Moving fake-hwclock data"
+  mv /etc/fake-hwclock.data /mutable/etc/fake-hwclock.data
+  ln -s /mutable/etc/fake-hwclock.data /etc/fake-hwclock.data
+fi
+# By default fake-hwclock is run during early boot, before /mutable
+# has been mounted and so will fail. Delay running it until /mutable
+# has been mounted.
+if [ -e /lib/systemd/system/fake-hwclock.service ]
+then
+  sed -i 's/Before=.*/After=mutable.mount/' /lib/systemd/system/fake-hwclock.service
 fi
 
 # Create a configs directory for others to use
 if [ ! -e "/mutable/configs" ]
 then
-    mkdir -p /mutable/configs
+  mkdir -p /mutable/configs
 fi
 
 # Move /var/spool to /tmp
-rm -rf /var/spool
-ln -s /tmp /var/spool
+if [ -L /var/spool ]
+then
+  log_progress "fixing /var/spool"
+  rm /var/spool
+  mkdir /var/spool
+  chmod 755 /var/spool
+  # a tmpfs fstab entry for /var/spool will be added below
+else
+  rm -rf /var/spool/*
+fi
 
 # Change spool permissions in var.conf (rondie/Margaret fix)
 sed -i "s/spool\s*0755/spool 1777/g" /usr/lib/tmpfiles.d/var.conf >/dev/null
 
 # Move dhcpd.resolv.conf to tmpfs
-mv /etc/resolv.conf /tmp/dhcpcd.resolv.conf
-ln -s /tmp/dhcpcd.resolv.conf /etc/resolv.conf
+if [ ! -e /tmp/dhcpcd.resolv.conf ]
+then
+  mv /etc/resolv.conf /tmp/dhcpcd.resolv.conf
+  ln -s /tmp/dhcpcd.resolv.conf /etc/resolv.conf
+fi
 
 # Update /etc/fstab
 # make /boot read-only
@@ -105,6 +129,11 @@ fi
 if ! grep -w -q "/tmp" /etc/fstab
 then
   echo "tmpfs /tmp    tmpfs nodev,nosuid 0 0" >> /etc/fstab
+fi
+
+if ! grep -w -q "/var/spool" /etc/fstab
+then
+  echo "tmpfs /var/spool tmpfs nodev,nosuid 0 0" >> /etc/fstab
 fi
 
 log_progress "done"

@@ -7,20 +7,6 @@ You can configure a Raspberry Pi Zero W or Raspberry Pi 4 so that your Tesla thi
 * The Pi can hold both dashcam clips and music files.
 * The Pi can automatically repair filesystem corruption produced by the Tesla's current failure to properly dismount the USB drives before cutting power to the USB ports.
 
-## Improvements
-
-This fork contains the following improvements compared to the upstream [cimryan/teslausb](https://github.com/cimryan/teslausb):
-1. Supports Tesla firmware 2019.x
-1. Supports saving more than one hour of recordings
-1. Supports exporting the recordings as a CIFS share
-1. Optional hotspot to access recordings while on the go
-1. Supports automatically syncing music from a CIFS share folder
-1. Supports using the Tesla API to keep the car awake during archiving
-1. Status indicator while running
-1. Easier and more flexible way to specify sizes of camera and music disks
-1. Support for Gotify, IFTTT and AWS SNS in addition to Pushover for notifications
-
-
 ## Installing
 
 It is recommended to use the [prebuilt image](https://github.com/marcone/teslausb/releases) and [one step setup instructions](https://github.com/marcone/teslausb/blob/main-dev/doc/OneStepSetup.md) to get started, as the instructions below may be outdated.
@@ -31,12 +17,12 @@ If you've never worked with Raspberry Pi before, don't know what a Windows share
 
 Note that archiving the clips can take from seconds to hours depending on how many clips you've saved and how strong the WiFi signal is in your Tesla. If you find that the clips aren't getting completely transferred before the car powers down after you park or before you leave you can use the Tesla app to turn on the Climate control. This will send power to the Raspberry Pi, allowing it to complete the archival operation.
 
-Alternatively, you can provide your Tesla account credentials and VIN in TeslaUSB's settings, which will allow it to use the [Tesla API](https://tesla-api.timdorr.com) to keep the car awake while the files transfer. Instructions are available in the [one step setup instructions](https://github.com/marcone/teslausb/blob/main-dev/doc/OneStepSetup.md)
+Alternatively, you can provide your Tesla account credentials and VIN in TeslaUSB's settings, which will allow it to use the [Tesla API](https://tesla-api.timdorr.com) to keep the car awake while the files transfer.
 
 ## Contributing
 
 You're welcome to contribute to this repo by submitting pull requests and creating issues.
-For pull requests, please split complex changes into multiple pull requests when feasible, use one commit per pull request, and try to follow the existing code style.
+For pull requests, please split complex changes into multiple pull requests when feasible, and follow the existing code style.
 
 ## Prerequisites
 
@@ -55,7 +41,7 @@ or
 
 
 **Note: Of the many varieties of Raspberry Pi available only the Raspberry Pi Zero W and Raspberry Pi 4 will work with TeslaUSB**.
-* A Micro SD card, at least 16 GB in size, and an adapter (if necessary) to connect the card to your computer.
+* A Micro SD card, at least 64 GB in size, and an adapter (if necessary) to connect the card to your computer.
 * A mechanism to connect the Pi to the Tesla: a USB A/Micro B cable for the Pi Zero W, or a USB A/Micro C cable for Pi 4
 
 Optional:
@@ -65,7 +51,7 @@ Optional:
 
 ### Software
 
-Download: [Raspbian Stretch Lite](https://www.raspberrypi.org/downloads/raspbian/)
+Download: [Raspberry Pi OS Lite](https://www.raspberrypi.org/downloads/raspberry-pi-os/)
 
 **NOTE:** it is highly recommended that you use the [prebuilt teslausb image](https://github.com/marcone/teslausb/releases) instead and follow the [one step headless setup process](doc/OneStepSetup.md).
 
@@ -91,7 +77,7 @@ There are four phases to setting up the Pi:
 
 **LAST WARNING:** it is highly recommended that you use the [prebuilt teslausb image](https://github.com/marcone/teslausb/releases) instead and follow the [one step headless setup process](doc/OneStepSetup.md).
 
-[These instructions](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) tell you how to get Raspbian onto your MicroSD card. Basically:
+[These instructions](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) tell you how to get Raspberry PI OS onto your MicroSD card. Basically:
 1. Connect your Micro SD card to your computer.
 2. Use Etcher to write the zip file you downloaded to the Micro SD card.
    > Note: you don't need to uncompress the zip file you downloaded.
@@ -118,28 +104,27 @@ You'll stay in this root shell until you run the "halt" command in the "Set up U
 Follow the instructions corresponding to the technology you'd like to use to host the archive for your dashcam clips. You must choose just one of these technologies; don't follow more than one of these sets of instructions:
 * Windows file share, MacOS Sharing, or Samba on Linux: [Instructions](doc/SetupShare.md).
 * SFTP/rsync: [Instructions](doc/SetupRSync.md)
-* **Experimental:** Google Drive, Amazon S3, DropBox, Microsoft OneDrive: [Instructions](doc/SetupRClone.md)
+* Google Drive, Amazon S3, DropBox, Microsoft OneDrive: [Instructions](doc/SetupRClone.md)
 
 ### Optional: Allocate SD Card Storage
 
 Indicate how much of the sd card you want to allocate to the car for recording dashcam footage and music by running this command:
 
 ```
- export camsize=<number or percentage>
+ export CAM_SIZE=<number or percentage>
 ```
 
-For example, using `export camsize=100%` would allocate 100% of the space to recording footage from your car and would not create a separate music partition. `export camsize=50%` would allocate half of the space for a dashcam footage drive and allocates the other half to for a music storage drive, unless otherwise specified. If you don't set `camsize`, the script will allocate 90% of the total space to the dashcam by default. Size can be specified as a percentage or as an absolute value, e.g. `export camsize=16G` would allocate 16 gigabytes for dashcam footage.
-If you want limit music storage so it doesn't use up all the remaining storage after camera storage has been allocated, use `export musicsize=<number or percentage>` to specify the size.
+For example, using `export CAM_SIZE=100%` would allocate 100% of the space to recording footage from your car and would not create a separate music partition. `export CAM_SIZE=50%` would allocate half of the space for a dashcam footage drive and not create a music partition, unless otherwise specified. If you don't set `CAM_SIZE`, the script will allocate 90% of the total space to the dashcam by default. Size can be specified as a percentage or as an absolute value, e.g. `export CAM_SIZE=30G` would allocate 30 gigabytes for dashcam footage (technically 30 "gibibytes", or 32212254720 bytes).
+To specify the size of the music drive, use `export MUSIC_SIZE=<number or percentage>`. **NOTE** the music drive size needs to be explicitly specified and defaults to 0 (no music drive), but the default used to be to use all the remaining space.
 For example, if there is 100 gigabyte of free space, then
 ```
- export camsize=50%
- export musicsize=10%
+ export CAM_SIZE=50%
+ export MUSIC_SIZE=10%
 ```
 would allocate 50 gigabytes for camera and 10 gigabytes for music, leaving 40 gigabytes free.
 
-Note: since the car records about 5.5 gigabyte per hour, and throws away non-saved recordings after an hour, it is not very useful to make 'camsize' very large. In fact, it is better to use a relatively small size, so that teslausb has space to preserve recordings that are older than 1 hour, which would otherwise be discarded by the car.
-As an example, if your normal use case is driving to work in the morning, enabling Sentry while parked, and going back home in the evening, with the car reporting up to 10 Sentry events, then 16 GB is a good size to use. This allows the car to keep about 2 hours worth of Sentry mode recordings, in addition to the normal recordings. If you anticipate needing more space for saved recordings, for example if your car generally reports much more Sentry events, you manually save recordings a lot, or if you're going to be away from wifi for multiple days, then increase size as needed.
-In order for teslausb to preserve recordings older than an hour, there needs to be enough free space on the sd card, at least 'camsize' worth, preferably much more.
+Note: the current recommended CAM_SIZE is 30 gigabytes, i.e. `export CAM_SIZE=30G`. This is large enough that the car won't display the "USB too small" warning, holds about 25-30 Saved/Sentry events (each event is 10 minutes worth of video, unless they overlap in which case they're smaller). If you anticipate needing more space for saved recordings, for example if your car generally reports many more Sentry events because you park in a busy area, or if you're going to be away from wifi for multiple days, then increase size as needed.
+In order for teslausb to preserve recordings older than an hour, there needs to be enough free space on the sd card, at least 'CAM_SIZE' worth, preferably much more, so use of a large sd card or SSD drive is recommended.
 
 ### Optional: Configure push notification via Pushover, Gotify, IFTTT, or AWS SNS
 
@@ -179,7 +164,7 @@ Your Pi is now ready to be plugged into your Tesla. If you want to add music to 
 
 ## Optional: Add music to the Pi
 
-> Note: If you set `camsize` to `100%` then skip this step.
+> **Note:** If you set `CAM_SIZE` to `100%` then skip this step.
 
 Connect the Pi to a computer. If you're using a cable be sure to use the port labeled "USB" on the circuitboard.
 1. Wait for the Pi to show up on the computer as a USB drive.
@@ -188,8 +173,10 @@ Connect the Pi to a computer. If you're using a cable be sure to use the port la
 4. Unplug the Pi from the computer.
 5. Plug the Pi into your Tesla.
 
-Alternatively, you can configure the Pi to automatically copy from a CIFS share. To do this, define the "musicsharename" variable to point at a CIFS share and folder. The share currently must exist on the same server as the one where recordings will be backed up, and use the same credentials. The Pi will sync down ALL music it finds under the specified folder, so be sure there is enough space on the Pi's music drive.
-For example, if you have your music on a share called 'Music', and on that share have a folder called 'CarMusic' where you copied all the songs that you want to have available in the car, use `export musicsharename=Music/CarMusic` in the setup file.
+Alternatively, you can configure the Pi to automatically copy from a CIFS share. To do this, define the "MUSIC_SHARE_NAME" variable to point at a CIFS share and folder. The share currently must exist on the same server as the one where recordings will be backed up, and use the same credentials. The Pi will sync down ALL music it finds under the specified folder, so be sure there is enough space on the Pi's music drive.
+For example, if you have your music on a share called 'Music', and on that share have a folder called 'CarMusic' where you copied all the songs that you want to have available in the car, use `export MUSIC_SHARE_NAME=Music/CarMusic` in the setup file.
+
+> **Note:** if you find that not all  music is being copied, you may have unsupported characters in file names, such as `"`, `:` or `>`. If this is the case, either enable name-mangling on your server, or enable [catia](https://www.samba.org/samba/docs/current/man-html/vfs_catia.8.html).
 
 
 ## Optional: Making changes to the system after setup

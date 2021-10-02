@@ -1,17 +1,11 @@
 #!/bin/bash -eu
 
-log "Moving clips to archive..."
-
-NUM_FILES_MOVED=0
-NUM_FILES_FAILED=0
-NUM_FILES_DELETED=0
-
 function connectionmonitor {
   while true
   do
-    for i in {1..5}
+    for _ in {1..5}
     do
-      if timeout 6 /root/bin/archive-is-reachable.sh $ARCHIVE_HOST_NAME
+      if timeout 6 /root/bin/archive-is-reachable.sh "$ARCHIVE_SERVER"
       then
         # sleep and then continue outer loop
         sleep 5
@@ -19,78 +13,41 @@ function connectionmonitor {
       fi
     done
     log "connection dead, killing archive-clips"
-    # The archive loop might be stuck on an unresponsive server, so kill it hard.
-    # (should be no worse than losing power in the middle of an operation)
-    kill -9 $1
+    # Since there can be a substantial delay before rsync deletes archived
+    # source files, give it an opportunity to delete them before killing it
+    # hard.
+    killall rsync || true
+    sleep 2
+    killall -9 rsync || true
+    kill -9 "$1" || true
     return
   done
 }
 
-function moveclips() {
-  ROOT="$1"
-  PATTERN="$2"
-  SUB=$(basename $ROOT)
-
-  if [ ! -d "$ROOT" ]
-  then
-    log "$ROOT does not exist, skipping"
-    return
-  fi
-
-  while read file_name
-  do
-    if [ -d "$ROOT/$file_name" ]
-    then
-      log "Creating output directory '$SUB/$file_name'"
-      if ! mkdir -p "$ARCHIVE_MOUNT/$SUB/$file_name"
-      then
-        log "Failed to create '$SUB/$file_name', check that archive server is writable and has free space"
-        return
-      fi
-    elif [ -f "$ROOT/$file_name" ]
-    then
-      size=$(stat -c%s "$ROOT/$file_name")
-      if [ $size -lt 100000 ]
-      then
-        log "'$SUB/$file_name' is only $size bytes"
-        rm "$ROOT/$file_name"
-        NUM_FILES_DELETED=$((NUM_FILES_DELETED + 1))
-      else
-        log "Moving '$SUB/$file_name'"
-        outdir=$(dirname "$file_name")
-        if mv -f "$ROOT/$file_name" "$ARCHIVE_MOUNT/$SUB/$outdir"
-        then
-          log "Moved '$SUB/$file_name'"
-          NUM_FILES_MOVED=$((NUM_FILES_MOVED + 1))
-        else
-          log "Failed to move '$SUB/$file_name'"
-          NUM_FILES_FAILED=$((NUM_FILES_FAILED + 1))
-        fi
-      fi
-    else
-      log "$SUB/$file_name not found"
-    fi
-  done <<< $(cd "$ROOT"; find $PATTERN)
-}
-
 connectionmonitor $$ &
 
-# new file name pattern, firmware 2019.*
-moveclips "$CAM_MOUNT/TeslaCam/SavedClips" '*'
+# rsync's temp files may be left behind if the connection is lost,
+# but rsync doesn't clean these up on subsequent runs. Putting
+# them in a temp dir allows them to be easily cleaned up.
+rsynctmp=".teslausbtmp"
+rm -rf "$ARCHIVE_MOUNT/${rsynctmp:?}" || true
+mkdir -p "$ARCHIVE_MOUNT/$rsynctmp"
 
-# v10 firmware adds a SentryClips folder
-moveclips "$CAM_MOUNT/TeslaCam/SentryClips" '*'
+rm -f /tmp/archive-rsync-cmd.log /tmp/archive-error.log
 
-kill %1
+while [ -n "${1+x}" ]
+do
+  if ! (rsync -avhRL --remove-source-files --temp-dir="$rsynctmp" --no-perms --omit-dir-times --stats \
+        --log-file=/tmp/archive-rsync-cmd.log --ignore-missing-args \
+        --files-from="$2" "$1/" "$ARCHIVE_MOUNT" &> /tmp/rsynclog || [[ "$?" = "24" ]] )
+  then
+    cat /tmp/archive-rsync-cmd.log /tmp/rsynclog > /tmp/archive-error.log
+    exit 1
+  fi
 
-# delete empty directories under SavedClips and SentryClips
-rmdir --ignore-fail-on-non-empty "$CAM_MOUNT/TeslaCam/SavedClips"/* "$CAM_MOUNT/TeslaCam/SentryClips"/* || true
+  shift 2
+done
 
-log "Moved $NUM_FILES_MOVED file(s), failed to copy $NUM_FILES_FAILED, deleted $NUM_FILES_DELETED."
+rm -rf "$ARCHIVE_MOUNT/${rsynctmp:?}" || true
 
-if [ $NUM_FILES_MOVED -gt 0 ]
-then
-  /root/bin/send-push-message "TeslaUSB:" "Moved $NUM_FILES_MOVED dashcam file(s), failed to copy $NUM_FILES_FAILED, deleted $NUM_FILES_DELETED."
-fi
-
-log "Finished moving clips to archive."
+kill %1 || true
