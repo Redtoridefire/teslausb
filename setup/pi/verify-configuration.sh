@@ -14,7 +14,7 @@ function check_supported_hardware () {
   then
     return
   fi
-  if grep -q 'Raspberry Pi Zero 2' /sys/firmware/devicetree/base/model
+  if grep -q 'Raspberry Pi 2 Model B Rev 1.1' /sys/firmware/devicetree/base/model
   then
     return
   fi
