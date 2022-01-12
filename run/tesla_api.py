@@ -34,8 +34,7 @@ tesla_api_json = {
     'vehicle_id': 0,
 }
 
-# mutable_dir = '/mutable'
-mutable_dir = '.'
+mutable_dir = '/mutable'
 
 def _execute_request(url=None, method=None, data=None, require_vehicle_online=True):
     """
