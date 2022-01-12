@@ -387,6 +387,35 @@ def wake_up_vehicle():
     _log('Sending wakeup API command...')
     return _execute_request()
 
+def set_charge_limit(percent):
+    return _execute_request(
+        '{}/{}/command/set_charge_limit'.format(base_url, tesla_api_json['id']),
+        method='POST',
+        data={'percent': percent}
+    )
+
+def actuate_trunk():
+    result = _execute_request(
+        '{}/{}/command/actuate_trunk'.format(base_url, tesla_api_json['id']),
+        method='POST',
+        data={'which_trunk': 'rear'}
+    )
+    return result['response']['result']
+
+def actuate_frunk():
+    result = _execute_request(
+        '{}/{}/command/actuate_trunk'.format(base_url, tesla_api_json['id']),
+        method='POST',
+        data={'which_trunk': 'front'}
+    )
+    return result['response']['result']
+
+def flash_lights():
+    result = _execute_request(
+        '{}/{}/command/flash_lights'.format(base_url, tesla_api_json['id']),
+        method='POST'
+    )
+    return result['response']['result']
 
 def set_sentry_mode(enabled: bool):
     """
