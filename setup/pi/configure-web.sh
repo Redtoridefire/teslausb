@@ -52,4 +52,8 @@ sed -i 's/#user_allow_other/user_allow_other/' /etc/fuse.conf
 echo 'www-data ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/010_www-data-nopasswd
 chmod 440 /etc/sudoers.d/010_www-data-nopasswd
 
+# avoid `vcgencmd measure_temp` throw "VCHI initialization failed"
+# https://chewett.co.uk/blog/258/vchi-initialization-failed-raspberry-pi-fixed/
+usermod -aG video www-data
+
 setup_progress "done configuring nginx"
