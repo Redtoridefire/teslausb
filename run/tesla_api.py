@@ -113,12 +113,12 @@ def _rest_request(url, method=None, data=None):
         response = requests.post(url, headers=headers, data=data)
     else:
         raise ValueError('Unsupported Request Method: {}'.format(method))
-    if  'invalid bearer token' in response.text:
-        _error("Invalid Access token, removing from cache...")
-        _invalidate_access_token()
     if not response.text:
         _error("Fatal Error: Tesla REST Service failed to return a response, access token may have expired")
         sys.exit(1)
+    if  'invalid bearer token' in response.text:
+        _error("Invalid Access token, removing from cache...")
+        _invalidate_access_token()
     json_response = response.json()
 
     # log full JSON response for debugging
