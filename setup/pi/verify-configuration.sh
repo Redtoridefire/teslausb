@@ -22,6 +22,10 @@ function check_supported_hardware () {
   then
     return
   fi
+  if grep -q 'Raspberry Pi Compute Module 4' /sys/firmware/devicetree/base/model
+  then
+    return
+  fi
   setup_progress "STOP: unsupported hardware: '$(cat /sys/firmware/devicetree/base/model)'"
   setup_progress "(only Pi Zero W and Pi 4 have the necessary hardware to run teslausb)"
   exit 1
