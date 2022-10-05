@@ -43,7 +43,7 @@ Optional:
 ## Installing
 
 To install teslausb, please use the [prebuilt image](https://github.com/marcone/teslausb/releases) and [one step setup instructions](doc/OneStepSetup.md).
-
+If you are interested in having more detailed information about how TeslaUsb works, have a look into the [wiki](https://github.com/marcone/teslausb/wiki).
 
 ## Contributing
 
