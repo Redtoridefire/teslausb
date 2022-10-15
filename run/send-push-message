@@ -73,6 +73,11 @@ function send_slack () {
   curl -X POST --data-urlencode "payload=$payload" "$SLACK_WEBHOOK_URL"
 }
 
+function send_shell () {
+  log "Sending Shell command."
+  bash "$SHELL_COMMAND"
+}
+
 log "$message"
 
 [ "${PUSHOVER_ENABLED:-false}" = "true" ] && send_pushover
@@ -84,5 +89,6 @@ log "$message"
 [ "${TELEGRAM_ENABLED:-false}" = "true" ] && send_telegram
 [ "${MATRIX_ENABLED:-false}" = "true" ] && send_matrix
 [ "${SLACK_ENABLED:-false}" = "true" ] && send_slack
+[ "${SHELL_ENABLED:-false}" = "true" ] && send_shell
 
 exit 0
