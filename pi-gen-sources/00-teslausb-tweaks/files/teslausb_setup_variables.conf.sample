@@ -184,7 +184,7 @@ export WIFIPASS='your_pass'
 
 # Uncomment if setting up shell notifications
 # export SHELL_ENABLED=true
-# export SHELL_COMMAND=ssh root@remote-server 'process videos command'
+# export SHELL_COMMAND="ssh root@remote-server 'process videos command'"
 
 # tesla_dashcam / Trigger file support.
 # Uncomment any TRIGGER_FILE_xxxxx below to create trigger file(s) in the
