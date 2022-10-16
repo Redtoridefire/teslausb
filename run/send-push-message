@@ -2,7 +2,7 @@
 
 title="$1"
 message="$2"
-type="$3"
+type="${3:-}"
 
 function send_pushover () {
   log "Sending Pushover message."
@@ -76,11 +76,11 @@ function send_slack () {
 
 function send_shell () {
   log "Sending Shell command."
-  if [ "$type" == "start" ]; then
-    eval "$SHELL_COMMAND_START" &
+  if [[ -n "$NOTIFICATION_COMMAND_START" && "$type" = "start" ]]; then
+    eval "$NOTIFICATION_COMMAND_START" &
   fi
-  if [ "$type" == "finish" ]; then
-    eval "$SHELL_COMMAND_FINISH" &
+  if [[ -n "$NOTIFICATION_COMMAND_FINISH" &&  "$type" = "finish" ]]; then
+    eval "$NOTIFICATION_COMMAND_FINISH" &
   fi
 }
 
@@ -95,6 +95,6 @@ log "$message"
 [ "${TELEGRAM_ENABLED:-false}" = "true" ] && send_telegram
 [ "${MATRIX_ENABLED:-false}" = "true" ] && send_matrix
 [ "${SLACK_ENABLED:-false}" = "true" ] && send_slack
-[ "${SHELL_ENABLED:-false}" = "true" ] && send_shell
+[ "${NOTIFICATION_COMMAND_ENABLED:-false}" = "true" ] && send_shell
 
 exit 0
