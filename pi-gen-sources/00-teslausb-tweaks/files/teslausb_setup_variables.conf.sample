@@ -182,9 +182,10 @@ export WIFIPASS='your_pass'
 # export MATRIX_PASSWORD='put_your_matrix_password_here'
 # export MATRIX_ROOM='put_the_matrix_target_room_id_here'
 
-# Uncomment if setting up shell notifications
+# Uncomment if setting up shell notifications. Use ":" for no action.
 # export SHELL_ENABLED=true
-# export SHELL_COMMAND="ssh root@remote-server 'process videos command'"
+# export SHELL_COMMAND_START=":"
+# export SHELL_COMMAND_FINISH="ssh root@remote-server 'process videos command'"
 
 # tesla_dashcam / Trigger file support.
 # Uncomment any TRIGGER_FILE_xxxxx below to create trigger file(s) in the

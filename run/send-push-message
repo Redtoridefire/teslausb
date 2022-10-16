@@ -2,6 +2,7 @@
 
 title="$1"
 message="$2"
+type="$3"
 
 function send_pushover () {
   log "Sending Pushover message."
@@ -75,7 +76,12 @@ function send_slack () {
 
 function send_shell () {
   log "Sending Shell command."
-  bash "$SHELL_COMMAND"
+  if [ "$type" == "start" ]; then
+    eval "$SHELL_COMMAND_START" &
+  fi
+  if [ "$type" == "finish" ]; then
+    eval "$SHELL_COMMAND_FINISH" &
+  fi
 }
 
 log "$message"
