@@ -83,6 +83,7 @@ export SHARE_PASSWORD=password
 #   * If no music size is specified, no music drive will be created.
 export CAM_SIZE=30G
 #export MUSIC_SIZE=4G
+#export BOOMBOX_SIZE=100M
 
 # Use ExFAT filesystem instead of FAT32.
 #
