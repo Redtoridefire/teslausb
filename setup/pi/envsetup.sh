@@ -28,8 +28,10 @@ function read_setup_variables {
   newnamefor[archiveserver]=ARCHIVE_SERVER
   newnamefor[camsize]=CAM_SIZE
   newnamefor[musicsize]=MUSIC_SIZE
+  newnamefor[musicsize]=BOOMBOX_SIZE
   newnamefor[sharename]=SHARE_NAME
   newnamefor[musicsharename]=MUSIC_SHARE_NAME
+  newnamefor[musicsharename]=BOOMBOX_SHARE_NAME
   newnamefor[shareuser]=SHARE_USER
   newnamefor[sharepassword]=SHARE_PASSWORD
   newnamefor[tesla_email]=TESLA_EMAIL
