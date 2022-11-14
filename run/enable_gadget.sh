@@ -70,6 +70,14 @@ then
   echo "TeslaUSB MUSIC $(du -h /backingfiles/music_disk.bin | awk '{print $1}')" > "$gadget_root/functions/mass_storage.0/lun.1/inquiry_string"
 fi
 
+# one lun is created by default, so we only need to create the 2nd one
+if [ -e "/backingfiles/boombox_disk.bin" ]
+then
+  mkdir -p "$gadget_root/functions/mass_storage.0/lun.1"
+  echo "/backingfiles/boombox_disk.bin" > "$gadget_root/functions/mass_storage.0/lun.1/file"
+  echo "TeslaUSB BOOMBOX $(du -h /backingfiles/boombox_disk.bin | awk '{print $1}')" > "$gadget_root/functions/mass_storage.0/lun.1/inquiry_string"
+fi
+
 ln -sf "$gadget_root/functions/mass_storage.0" "$gadget_root/configs/$cfg.1"
 
 # activate
