@@ -28,7 +28,6 @@ function read_setup_variables {
   newnamefor[archiveserver]=ARCHIVE_SERVER
   newnamefor[camsize]=CAM_SIZE
   newnamefor[musicsize]=MUSIC_SIZE
-  newnamefor[boomboxsize]=BOOMBOX_SIZE
   newnamefor[sharename]=SHARE_NAME
   newnamefor[musicsharename]=MUSIC_SHARE_NAME
   newnamefor[shareuser]=SHARE_USER
