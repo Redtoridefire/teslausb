@@ -175,9 +175,10 @@ export WIFIPASS='your_pass'
 # export IFTTT_EVENT_NAME=put_your_event_name_here
 # export IFTTT_KEY=put_your_key_here
 
-# Uncomment if setting up Discord push notifications
+# Uncomment if setting up Discord push notifications. Be sure to set DISCORD_USERNAME
 # export DISCORD_ENABLED=true
 # export DISCORD_WEBHOOK_URL=put_your_webhook_url_here
+# export DISCORD_USERNAME=desired_discord_username
 
 # Uncomment if setting up AWS SNS notifications
 # export SNS_ENABLED=true
