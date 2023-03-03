@@ -28,7 +28,7 @@ function send_discord() {
   log "Sending Discord message."
 
   curl -H "Content-Type: application/json" -d \
-    '{"username": "'"$title"'", "content": "'"$message"'"}' \
+    '{"username": "'"$DISCORD_USERNAME"'", "content": "'"$message"'"}' \
     "$DISCORD_WEBHOOK_URL"
 }
 
