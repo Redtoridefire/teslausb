@@ -91,6 +91,7 @@ function send_shell () {
 
 log "$message"
 
+[ "${SIGNAL_ENABLED:-false}" = "true" ] && send_signal
 [ "${PUSHOVER_ENABLED:-false}" = "true" ] && send_pushover
 [ "${GOTIFY_ENABLED:-false}" = "true" ] && send_gotify
 [ "${DISCORD_ENABLED:-false}" = "true" ] && send_discord
