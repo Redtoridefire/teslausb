@@ -5,6 +5,7 @@ message="$2"
 type="${3:-}"
 
 function send_signal () {
+  log "Sending Pushover message."
   curl -X POST -H "Content-Type: application/json" 'http://'${url_port}'/v2/send4' \
      -d '{"message":"'${message}'", "number": "'${from_num}'", "recipients": [ "'${to_num}'" ]}'
  }
