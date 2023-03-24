@@ -164,7 +164,8 @@ export WIFIPASS='your_pass'
 # set a custom title by setting the following variable.
 # export NOTIFICATION_TITLE="TeslaUSB Notification"
 
-# Uncomment if setting up Signal notifications
+# Uncomment if setting up Signal_cli notifications
+# export SIGNAL_ENABLED=true
 # export URL_PORT=http://<url>:8080
 # export FROM_NUM=country_code_and_number_configured_with_signal
 # export TO_NUM=country_code_and_number_configured_with_signal
