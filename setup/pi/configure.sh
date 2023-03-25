@@ -258,9 +258,9 @@ function check_signal_configuration () {
     then
       log_progress "STOP: You're trying to setup Signal but didn't provide a URL."
       log_progress "Define the variables like this:"
-      log_progress "export URL_PORT=put_protocol_ip/hostname_portnumber"
-      log_progress "export TO_NUM=put_phone_number_associated_with_signal_including_country_code"
-      log_progress "export FROM_NUM=put_phone_number_associated_with_signal_including_country_code_to_send_to"
+      log_progress "export SIGNAL_URL=put_protocol_ip/hostname_portnumber"
+      log_progress "export SIGNAL_TO_NUM=put_phone_number_associated_with_signal_including_country_code"
+      log_progress "export SIGNAL_FROM_NUM=put_phone_number_associated_with_signal_including_country_code_to_send_to"
       exit 1
     elif [ "${SIGNAL_URL}" = "http://<url>:8080" ] || [  "${SIGNAL_TO_NUM}" = "country_code_and_number_configured_with_signal" ] || [  "${SIGNAL_FROM_NUM}" = "country_code_and_number_configured_with_signal"  ]
     then
