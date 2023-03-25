@@ -8,7 +8,7 @@ function send_signal () {
   log "Sending Signal message."
   
   curl -X POST -H "Content-Type: application/json" $URL_PORT'/v2/send' \
-     -d '{"message":"'$title'": "'$message'", "number": "'$FROM_NUM'", "recipients": [ "'$TO_NUM'" ]}'
+     -d '{"message": "'"$message"'", "number": "'$FROM_NUM'", "recipients": [ "'$TO_NUM'" ]}'
  }
 
 function send_pushover () {
