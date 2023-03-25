@@ -166,9 +166,9 @@ export WIFIPASS='your_pass'
 
 # Uncomment if setting up Signal_cli notifications
 # export SIGNAL_ENABLED=true
-# export URL_PORT=http://<url>:8080
-# export FROM_NUM=country_code_and_number_configured_with_signal
-# export TO_NUM=country_code_and_number_configured_with_signal
+# export SIGNAL_URL=http://<url>:8080
+# export SIGNAL_FROM_NUM=country_code_and_number_configured_with_signal
+# export SIGNAL_TO_NUM=country_code_and_number_configured_with_signal
 
 # Uncomment if setting up Pushover push notifications
 # export PUSHOVER_ENABLED=true
