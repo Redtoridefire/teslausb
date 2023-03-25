@@ -254,7 +254,7 @@ function install_matrix_packages () {
 function check_signal_configuration () {
   if [ "${SIGNAL_ENABLED:-false}" = "true" ]
   then
-    if [ -z "${SIGNAL_URL+x}" ] || [  "${SIGNALTO_NUM}" = "country_code_and_number_configured_with_signal" ] || [  "${SIGNAL_FROM_NUM}" = "country_code_and_number_configured_with_signal"  ]
+    if [ -z "${SIGNAL_URL+x}" ] || [  "${SIGNALTO_NUM+x}" = "country_code_and_number_configured_with_signal" ] || [  "${SIGNAL_FROM_NUM+x}" = "country_code_and_number_configured_with_signal"  ]
     then
       log_progress "STOP: You're trying to setup Signal but didn't provide a URL."
       log_progress "Define the variables like this:"
