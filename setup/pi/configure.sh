@@ -254,7 +254,7 @@ function install_matrix_packages () {
 function check_signal_configuration () {
   if [ "${SIGNAL_ENABLED:-false}" = "true" ]
   then
-    if [ -z "${URL_PORT+x}" ] || [  "${TO_NUM}" = "country_code_and_number_configured_with_signal" ] || [  "${FROM_NUM}" = "country_code_and_number_configured_with_signal"  ]
+    if [ -z "${SIGNAL_URL+x}" ] || [  "${SIGNALTO_NUM}" = "country_code_and_number_configured_with_signal" ] || [  "${SIGNAL_FROM_NUM}" = "country_code_and_number_configured_with_signal"  ]
     then
       log_progress "STOP: You're trying to setup Signal but didn't provide a URL."
       log_progress "Define the variables like this:"
@@ -262,7 +262,7 @@ function check_signal_configuration () {
       log_progress "export TO_NUM=put_phone_number_associated_with_signal_including_country_code"
       log_progress "export FROM_NUM=put_phone_number_associated_with_signal_including_country_code_to_send_to"
       exit 1
-    elif [ "${URL_PORT}" = "http://<url>:8080" ] || [  "${TO_NUM}" = "country_code_and_number_configured_with_signal" ] || [  "${FROM_NUM}" = "country_code_and_number_configured_with_signal"  ]
+    elif [ "${SIGNAL_URL}" = "http://<url>:8080" ] || [  "${SIGNAL_TO_NUM}" = "country_code_and_number_configured_with_signal" ] || [  "${SIGNAL_FROM_NUM}" = "country_code_and_number_configured_with_signal"  ]
     then
       log_progress "STOP: You're trying to setup Signal, but didn't replace the default URL, to number, or from number"
       exit 1
