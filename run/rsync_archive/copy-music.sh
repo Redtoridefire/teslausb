@@ -2,7 +2,8 @@
 
 SRC="${RSYNC_USER}@${RSYNC_SERVER}:${MUSIC_SHARE_NAME}"
 DST="${MUSIC_MOUNT}"
-LOG="/tmp/rsyncmusiclog.txt"
+RSYNC_STATS="/tmp/music-rsync-stats"
+RSYNC_LOG="/tmp/music-rsync-cmd.log"
 
 # check that DST is the mounted disk image, not the mountpoint directory
 if ! findmnt --mountpoint "$DST" > /dev/null
@@ -11,55 +12,28 @@ then
   exit
 fi
 
-function connectionmonitor {
-  while true
-  do
-    for _ in {1..10}
-    do
-      if timeout 3 /root/bin/archive-is-reachable.sh "$ARCHIVE_SERVER"
-      then
-        # sleep and then continue outer loop
-        sleep 5
-        continue 2
-      fi
-    done
-    log "connection dead, killing copy-music"
-    # Give rsync a chance to clean up before killing it hard.
-    killall rsync || true
-    sleep 2
-    killall -9 rsync || true
-    kill -9 "$1" || true
-    return
-  done
-}
-
 function do_music_sync {
   log "Syncing music from remote..."
 
-  connectionmonitor $$ &
-
-  if ! rsync -rtum --no-human-readable --exclude=.fseventsd/*** --exclude=*.DS_Store --exclude=.metadata_never_index \
-                --exclude="System Volume Information/***" \
-                --delete --modify-window=2 --info=stats2 "$SRC/" "$DST" &> "$LOG"
+  if ! rsync -rtumL --timeout=60 --no-human-readable --no-perms --delete --modify-window=2 \
+                --exclude=.fseventsd/*** --exclude=*.DS_Store --exclude=.metadata_never_index --exclude="System Volume Information/***" \
+                --log-file="$RSYNC_LOG" --info=stats2 "$SRC/" "$DST" &> "$RSYNC_STATS"
   then
     log "rsync failed with error $?"
   fi
-
-  # Stop the connection monitor.
-  kill %1 || true
 
   # remove empty directories
   find "$DST" -depth -type d -empty -delete || true
 
   # parse log for relevant info
   declare -i NUM_FILES_COPIED
-  NUM_FILES_COPIED=$(($(sed -n -e 's/\(^Number of regular files transferred: \)\([[:digit:]]\+\).*/\2/p' "$LOG")))
+  NUM_FILES_COPIED=$(($(sed -n -e 's/\(^Number of regular files transferred: \)\([[:digit:]]\+\).*/\2/p' "$RSYNC_STATS")))
   declare -i NUM_FILES_DELETED
-  NUM_FILES_DELETED=$(($(sed -n -e 's/\(^Number of deleted files: [[:digit:]]\+ (reg: \)\([[:digit:]]\+\)*.*/\2/p' "$LOG")))
+  NUM_FILES_DELETED=$(($(sed -n -e 's/\(^Number of deleted files: [[:digit:]]\+ (reg: \)\([[:digit:]]\+\)*.*/\2/p' "$RSYNC_STATS")))
   declare -i TOTAL_FILES
-  TOTAL_FILES=$(sed -n -e 's/\(^Number of files: [[:digit:]]\+ (reg: \)\([[:digit:]]\+\)*.*/\2/p' "$LOG")
+  TOTAL_FILES=$(sed -n -e 's/\(^Number of files: [[:digit:]]\+ (reg: \)\([[:digit:]]\+\)*.*/\2/p' "$RSYNC_STATS")
   declare -i NUM_FILES_ERROR
-  NUM_FILES_ERROR=$(($(grep -c "failed to open" $LOG || true)))
+  NUM_FILES_ERROR=$(($(grep -c "failed to open" "$RSYNC_STATS" || true)))
 
   declare -i NUM_FILES_SKIPPED=$((TOTAL_FILES-NUM_FILES_COPIED))
   NUM_FILES_COPIED=$((NUM_FILES_COPIED-NUM_FILES_ERROR))
