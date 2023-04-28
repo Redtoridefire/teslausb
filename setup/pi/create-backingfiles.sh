@@ -84,7 +84,7 @@ function add_drive () {
   local useexfat="$5"
 
   log_progress "Allocating ${size}K for $filename..."
-  fallocate -l "$size"K "$filename"
+  fallocate -l "${size}K" "$filename"
   if [ "$useexfat" = true  ]
   then
     echo "type=7" | sfdisk "$filename" > /dev/null
@@ -99,9 +99,9 @@ function add_drive () {
   log_progress "Creating filesystem with label '$label'"
   if [ "$useexfat" = true  ]
   then
-    mkfs.exfat "$loopdev" -L "$label"
+    mkfs.exfat "$loopdev" -n "$label"
   else
-    mkfs.vfat "$loopdev" -F 32 -n "$label"
+    mkfs.vfat -I "$loopdev" -F 32 -n "$label"
   fi
   losetup -d "$loopdev"
 
