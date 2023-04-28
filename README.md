@@ -1,23 +1,33 @@
 # teslausb
-Armbian orange pi zero 2 setup *tweaks
-  pacakages:
-  xfsprogs
-  dos2unix
-  hping3
-  libxxhash0
-  autofs
-  python3-pip
-  nginx
-  fcgiwrap
-  libnginx-mod-http-fancyindex
-  libfuse-dev
-  exfatprogs
-  sntp
+## Armbian orange pi zero 2 setup *tweaks
 
-first boot setup wifi with `nmtui and make a wpa_supplicant.conf at /etc/wpa_supplicant/wpa_supplicant.conf
-reboot # to commit network changes
-# now run the teslausb install
+apt pacakages:
+
+* xfsprogs
+* dos2unix
+* hping3
+* libxxhash0
+* autofs
+* python3-pip
+* nginx
+* fcgiwrap
+* libnginx-mod-http-fancyindex
+* libfuse-dev
+* exfatprogs
+* sntp
+
+first boot setup wifi with `nmtui`
+
+make a wpa_supplicant.conf at /etc/wpa_supplicant/wpa_supplicant.conf
+
+reboot
+
+to commit network changes
+
+now run the teslausb install
+
 ```curl https://raw.githubusercontent.com/marcone/teslausb/main-dev/setup/generic/install.sh | bash```
+
 if you have the changes for createbackingfiles.sh in this repo your install should work and run fine, you may have to restart it after making the mountpoints for the shares/disk images
 
 ## Intro
