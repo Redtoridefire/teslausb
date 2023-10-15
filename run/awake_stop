@@ -8,6 +8,6 @@ then
   kill "$(cat /tmp/keep_awake_task_pid)" || true
   rm -f /tmp/keep_awake_task_pid
   log "Start TeslaFi sleep attempt."
-  curl "https://www.teslafi.com/feed.php?token=f2cc21945a086bb42c7d0749a7cb10d19216c98874a6da1523fc321bcb35adef&command=sleep"
+  curl "https://www.teslafi.com/feed.php?token=TOKEN_HERE&command=sleep"
 fi
 
