@@ -10,5 +10,5 @@ function ping {
 }
 
 log "Starting background task to keep car awake."
-    ping &
-    echo $! > /tmp/keep_awake_task_pid
+ping &
+echo $! > /tmp/keep_awake_task_pid
