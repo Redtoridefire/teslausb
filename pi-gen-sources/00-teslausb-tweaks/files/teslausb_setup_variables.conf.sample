@@ -259,34 +259,48 @@ export WIFIPASS='your_pass'
 # Android: https://play.google.com/store/apps/details?id=net.leveugle.teslatokens
 # iOS: https://apps.apple.com/us/app/auth-app-for-tesla/id1552058613#?platform=iphone
 #
-# export TESLA_REFRESH_TOKEN=YOUR_REFRESH_TOKEN_GOES_HERE
-
-# If you have more than one Tesla vehicle on the account, you must also provide
-# the name or VIN for the vehicle for which this TeslaUSB install will be used,
-# so that TeslaUSB can keep the correct vehicle awake.
-# If you only have one car on the account, you do not need to specify this.
-# export TESLA_NAME="Elon's CyberTruck"
-# export TESLA_VIN=5YJ3E1EA4JF000001
+# If you're a TeslaFi user, you may prefer to keep your car wake using TeslaFi API
+# instead. The advantage is not exposing Tesla's Token and info in plain text, which
+# is a vulnerability should this configuration file is compromised. The TeslaFi API
+# token can easily be revoked and a new one generated at anytime. TeslaFi also allows
+# selective commands enablement (e.g. wake only), further improving vulnerability.
+# 
+# GENERATE/REVOKE TESLAFI API TOKEN: To generate the token, log into your TeslaFi account.
+#   Navigate to Settings -> Tesla API -> API Token (tab)
 #
-# By default, TeslaUSB uses a combination of APIs to keep the car awake,
-# similar to how to the Tesla app can wake up the car.
-# If you find your car isn't staying awake, you can try setting the
-# following to "sentry" to keep the car awake by temporarily turning
-# on Sentry mode while archiving.
-# export TESLA_WAKE_MODE=stream
+# ENABLE/DISABLE TESLAFI API COMMANDS: Verify the command(s) of interest (e.g. wake) is
+#   Navigate to Settings -> Tesla API -> Commands (tab)
+#export TESLA_REFRESH_TOKEN=YOUR_REFRESH_TOKEN_GOES_HERE
+#export TESLAFI_API_TOKEN=YOUR_TESLAFI_API_TOKEN_GOES_HERE
+
+# For Tesla API only (not for TeslaFi at this time):
+#   If you have more than one Tesla vehicle on the account, you must also provide
+#   the name or VIN for the vehicle for which this TeslaUSB install will be used,
+#   so that TeslaUSB can keep the correct vehicle awake.
+#   If you only have one car on the account, you do not need to specify this.
+#   export TESLA_NAME="Elon's CyberTruck"
+#export TESLA_VIN=5YJ3E1EA4JF000001
+#
+# For Tesla API only (not for TeslaFi at this time):
+#   By default, TeslaUSB uses a combination of APIs to keep the car awake,
+#   similar to how to the Tesla app can wake up the car.
+#   If you find your car isn't staying awake, you can try setting the
+#   following to "sentry" to keep the car awake by temporarily turning
+#   on Sentry mode while archiving.
+#export TESLA_WAKE_MODE=stream
 
 # Uncomment if you want to increase the size of the root
 # filesystem so there's extra space for installing additional
 # software. This only works if the backing store partition hasn't
 # been created yet, i.e. during early setup, and requires an extra
 # reboot. Sizes can be specified as for example "500M" or "2G"
-# export INCREASE_ROOT_SIZE=500M
+#export INCREASE_ROOT_SIZE=500M
 
 # Uncomment if you want to have teslausb automatically install some
 # additional packages during setup. This only works if there is enough
 # free space available on the root partition to install the requested packages.
 # Requested packages should be space delineated
-# export INSTALL_USER_REQUESTED_PACKAGES="iftop mosh sysstat"
+#export INSTALL_USER_REQUESTED_PACKAGES="iftop mosh sysstat"
 
 # Uncomment if you want to use different vm/cpu parameters.
 # Leave commented to use teslausb's defaults, or set to 'default'
