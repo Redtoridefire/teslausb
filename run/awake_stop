@@ -6,5 +6,6 @@ then
   kill "$(cat /tmp/keep_awake_task_pid)" || true
   rm -f /tmp/keep_awake_task_pid
   log "Initiate TeslaFi sleep attempt."
-  curl "https://www.teslafi.com/feed.php?token=TESLATFI_API_TOKEN&command=sleep"
+  # Stops TeslFi from polling the car, allowing the car a chance to go to sleep.
+  curl -H "Authorization: Bearer TESLAFI_API_TOKEN" "https://www.teslafi.com/feed.php?command=sleep"
 fi
