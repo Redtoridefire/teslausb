@@ -1,10 +1,15 @@
 #!/bin/bash -eu
 
+# Background Task to keep car awake
+
 function ping {
   while true
   do
-    curl "https://www.teslafi.com/feed.php?token=TOKEN_HERE&command=wake" 
-    log "Reset TeslaFi polling timer to keep vehicle awake"
+    # By default, TeslaFi stops polling the car for 15 mintues to allow it to go to sleep, after it detects the car has been idling for 30 minutes.
+    # Resetting its idle timer prevents TeslaFi from stopping the poll, thus keeping the car awake.
+
+    curl "https://www.teslafi.com/feed.php?token=TESLAFI_API_TOKEN&command=wake" 
+    log "Reset TeslaFi idle timer to keep car awake."
     sleep 90
   done
 }
