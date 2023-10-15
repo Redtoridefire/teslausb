@@ -8,3 +8,7 @@ function ping {
     sleep 90
   done
 }
+
+log "Starting background task to keep car awake."
+    ping &
+    echo $! > /tmp/keep_awake_task_pid
