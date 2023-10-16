@@ -12,24 +12,24 @@ function ping {
   while true
   do
     # Use Tesla API to keep car awake
-    if [[-z "$TESLA_REFRESH_TOKEN"]];
+    if [ -z "$TESLA_REFRESH_TOKEN" ]
+    then
+      if /root/bin/tesla_api.py streaming_ping
       then
-        if /root/bin/tesla_api.py streaming_ping
-        then
-          log "Contacted car using Tesla API to keep it awake."
-          sleep 90
-        else
-          log "failed to contact car using Tesla API, retrying"
-          sleep 5
-        fi
+        log "Contacted car using Tesla API to keep it awake."
+        sleep 90
+      else
+        log "failed to contact car using Tesla API, retrying"
+        sleep 5
+      fi
     fi
 
     # Use TeslaFi API to keep car awake
-    if [[-z "$TESLA_API_TOKEN"]];
-      then
-        curl -H "Authorization: Bearer $TESLAFI_API_TOKEN" "https://www.teslafi.com/feed.php?command=wake"
-        log log "Contacted car using TeslaFi API to keep it awake."
-        sleep 300
+    if [ -z "$TESLA_API_TOKEN" ]
+    then
+      curl -H "Authorization: Bearer $TESLAFI_API_TOKEN" "https://www.teslafi.com/feed.php?command=wake"
+      log "Contacted car using TeslaFi API to keep it awake."
+      sleep 300
     fi    
   done
 }
