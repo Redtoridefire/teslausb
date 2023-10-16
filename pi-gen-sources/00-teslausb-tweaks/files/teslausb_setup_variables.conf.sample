@@ -291,6 +291,7 @@ export WIFIPASS='your_pass'
 #   If you find your car isn't staying awake, you can try setting the
 #   following to "sentry" to keep the car awake by temporarily turning
 #   on Sentry mode while archiving.
+# NOTE: Need to comment out if using TeslaFi.
 #export TESLA_WAKE_MODE=stream
 
 # Uncomment if you want to increase the size of the root
