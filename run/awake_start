@@ -19,7 +19,7 @@ function ping {
         log "Contact car every 90s using Tesla API to keep it awake."
         sleep 90
       else
-        log "failed to contact car using Tesla API, retrying in 5s..."
+        log "Failed to contact car using Tesla API, retrying in 5s..."
         sleep 5
       fi
     fi
