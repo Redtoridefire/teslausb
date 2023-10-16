@@ -260,20 +260,23 @@ export WIFIPASS='your_pass'
 # iOS: https://apps.apple.com/us/app/auth-app-for-tesla/id1552058613#?platform=iphone
 #
 # If you're a TeslaFi user, you may prefer to keep your car wake using TeslaFi API
-# instead. The advantage is not exposing Tesla's Token and info in plain text, which
-# is a vulnerability should this configuration file is compromised. The TeslaFi API
-# token can easily be revoked and a new one generated at anytime. TeslaFi also allows
-# selective commands enablement (e.g. wake only), further improving vulnerability.
+# instead. The advantage is not having to expose Tesla's Token and other info in this
+# file as plain text, which is a vulnerability should this file gets compromised.
+# The TeslaFi API token can easily be revoked and a new one generated at anytime.
+# TeslaFi also allows selective command(s) enablement (e.g. wake only), further
+# decreasing vulnerability.
 # 
 # GENERATE/REVOKE TESLAFI API TOKEN: To generate the token, log into your TeslaFi account.
 #   Navigate to Settings -> Tesla API -> API Token (tab)
 #
 # ENABLE/DISABLE TESLAFI API COMMANDS: Verify the command(s) of interest (e.g. wake) is
 #   Navigate to Settings -> Tesla API -> Commands (tab)
+#
+# NOTE: Both APIs should not be used at the same time.
 #export TESLA_REFRESH_TOKEN=YOUR_REFRESH_TOKEN_GOES_HERE
 #export TESLAFI_API_TOKEN=YOUR_TESLAFI_API_TOKEN_GOES_HERE
 
-# For Tesla API only (not for TeslaFi at this time):
+# FOR TESLA API ONLY (not for TeslaFi at this time):
 #   If you have more than one Tesla vehicle on the account, you must also provide
 #   the name or VIN for the vehicle for which this TeslaUSB install will be used,
 #   so that TeslaUSB can keep the correct vehicle awake.
@@ -281,7 +284,7 @@ export WIFIPASS='your_pass'
 #   export TESLA_NAME="Elon's CyberTruck"
 #export TESLA_VIN=5YJ3E1EA4JF000001
 #
-# For Tesla API only (not for TeslaFi at this time):
+# FOR TESLA API ONLY (not for TeslaFi at this time):
 #   By default, TeslaUSB uses a combination of APIs to keep the car awake,
 #   similar to how to the Tesla app can wake up the car.
 #   If you find your car isn't staying awake, you can try setting the
