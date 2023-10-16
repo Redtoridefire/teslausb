@@ -20,7 +20,7 @@ then
   rm -f /tmp/keep_awake_task_pid
 
   # Stops TeslFi from polling the car, allowing the car a chance to go to sleep.
-  if
+  if [[-z "$TESLA_API_TOKEN"]];
     log "Initiate TeslaFi sleep attempt."
     curl -H "Authorization: Bearer $TESLAFI_API_TOKEN" "https://www.teslafi.com/feed.php?command=sleep"
   fi
