@@ -266,13 +266,14 @@ export WIFIPASS='your_pass'
 # TeslaFi also allows selective command(s) enablement (e.g. wake only), further
 # decreasing vulnerability.
 # 
-# GENERATE/REVOKE TESLAFI API TOKEN: To generate the token, log into your TeslaFi account.
+# GENERATE/REVOKE TESLAFI API TOKEN: Log into your TeslaFi account.
 #   Navigate to Settings -> Tesla API -> API Token (tab)
 #
-# ENABLE/DISABLE TESLAFI API COMMANDS: Verify the command(s) of interest (e.g. wake) is
+# ENABLE/DISABLE TESLAFI API COMMANDS: Verify the 'Resume Polling' (wake) command is
+#   enabled. Do not confused this with the 'Wake Vehicle' command.
 #   Navigate to Settings -> Tesla API -> Commands (tab)
 #
-# NOTE: Both APIs should not be used at the same time.
+# NOTE: Both APIs should NOT be used at the same time. Choose one.
 #export TESLA_REFRESH_TOKEN=YOUR_REFRESH_TOKEN_GOES_HERE
 #export TESLAFI_API_TOKEN=YOUR_TESLAFI_API_TOKEN_GOES_HERE
 
