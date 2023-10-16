@@ -15,7 +15,7 @@ fi
 
 if [ -e /tmp/keep_awake_task_pid ]
 then
-  log "Stopping wake background task."
+  log "Stopping wake car background task."
   kill "$(cat /tmp/keep_awake_task_pid)" || true
   rm -f /tmp/keep_awake_task_pid
 
