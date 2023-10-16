@@ -2,19 +2,54 @@
 
 # Background Task to keep car awake
 
+if [ ! -x /root/bin/tesla_api.py ] || [ ! -s /mutable/cache.json ]
+then
+  log "not keeping car awake."
+  exit
+fi
+
 function ping {
   while true
   do
-    # By default, TeslaFi stops polling the car for 15 mintues to allow it to go to sleep, after it detects the car has been idling for 30 minutes.
-    # Resetting its idle timer prevents TeslaFi from stopping the poll, thus keeping the car awake.
-    # Backgroud task timer below should be set to a value less than TeslaFi's idle timer (3m or 1800s).
+    # Use Tesla API to keep car awake
+    if [[-z "$TESLA_REFRESH_TOKEN"]];
+      then
+        if /root/bin/tesla_api.py streaming_ping
+        then
+          log "Contacted car using Tesla API to keep it awake."
+          sleep 90
+        else
+          log "failed to contact car using Tesla API, retrying"
+          sleep 5
+        fi
+    fi
 
-    curl -H "Authorization: Bearer TESLAFI_API_TOKEN" "https://www.teslafi.com/feed.php?command=wake"
-    log "Reset TeslaFi idle timer to continue polling car."
-    sleep 1700
+    # Use TeslaFi API to keep car awake
+    if [[-z "$TESLA_API_TOKEN"]];
+      then
+        curl -H "Authorization: Bearer $TESLAFI_API_TOKEN" "https://www.teslafi.com/feed.php?command=wake"
+        log log "Contacted car using TeslaFi API to keep it awake."
+        sleep 300
+    fi    
   done
 }
 
-log "Starting background task to keep car awake."
-ping &
-echo $! > /tmp/keep_awake_task_pid
+case "${TESLA_WAKE_MODE:-stream}" in
+  sentry)
+    is_sentry_mode_enabled=$(/root/bin/tesla_api.py is_sentry_mode_enabled | tr '[:upper:]' '[:lower:]')
+    if [ "false" = "${is_sentry_mode_enabled}" ]
+    then
+      log "Temporarily enabling Sentry Mode to keep car awake."
+      touch /tmp/disable_sentry_after_archiving
+      /root/bin/tesla_api.py enable_sentry_mode &>> "${LOG_FILE}"
+    fi
+    ;;
+  stream)
+    log "Starting background task to keep car awake."
+    ping &
+    echo $! > /tmp/keep_awake_task_pid
+    ;;
+  *)
+    log "Unknown TESLA_WAKE_MODE: ${TESLA_WAKE_MODE}."
+    ;;
+esac
