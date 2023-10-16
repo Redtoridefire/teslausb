@@ -1,7 +1,5 @@
 #!/bin/bash -eu
 
-# Background Task to keep car awake
-
 if [ ! -x /root/bin/tesla_api.py ] || [ ! -s /mutable/cache.json ] || [[ -n $TESLAFI_API_TOKEN ]]
 then
   log "not keeping car awake."
