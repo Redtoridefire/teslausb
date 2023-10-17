@@ -1,17 +1,17 @@
-####################################################################
+################################################################################
 ### SAMPLE CONFIGURATION FILE FOR TESLAUSB Pi Setup
 ###
-### Example config file for teslausb_setup. Lines with "#" are comments/ignored.
-### Remove the "#" before "export" to activate a line. Be sure to rename this file
-### to "teslausb_setup_variables.conf" and place it in the "boot" folder of your
-### SD card.
+### Example config file for teslausb_setup. Lines preceded with "#"s are
+### comments/ignored.
+### Remove the "#" before "export" to activate a line. Be sure to rename this
+### file to "teslausb_setup_variables.conf" and place it in the "boot" folder of
+### your SD card or USB drive (if supported by your device).
 ### The latest version of this file is at: https://bit.ly/teslausbconfig
-###
-#####################################################################
+################################################################################
 
 ### Variables for CIFS (Windows/Mac file sharing) archiving.
-### If you want to use rsync or rclone, delete or comment out this section
-### and uncomment the rsync or rclone section below.
+### If you want to use rsync or rclone, delete or comment out this
+### section and uncomment the rsync or rclone section below.
 export ARCHIVE_SYSTEM=cifs
 export ARCHIVE_SERVER=your_archive_name_or_ip
 export SHARE_NAME=your_archive_share_name
@@ -42,8 +42,8 @@ export SHARE_PASSWORD=password
 ### plan on using an sd card at all (i.e. you are both booting from and storing
 ### recordings on the USB drive), or are ONLY using an sd card (i.e. boot from
 ### and store recordings on sd card), do NOT uncommment this line.
-### This should be set to the device name of the drive, e.g. /dev/sda for a drive
-### connected to a USB port, or /dev/nvme0n1 for an onboard NVME drive.
+### This should be set to the device name of the drive, e.g. /dev/sda for a
+### drive connected to a USB port, or /dev/nvme0n1 for an onboard NVME drive.
 ### NOTE: the specified drive will be wiped and repartitioned.
 # export DATA_DRIVE=/dev/sda
 
@@ -51,9 +51,9 @@ export SHARE_PASSWORD=password
 ### reports of that amount varying by country.
 ### In order to keep a continuous record of RecentClips the snapshot interval
 ### should be set about 2 minutes shorter than the amount of RecentClips history
-### the car keeps. The following adjusts the capture interval for cases where the
-### car only keeps 10 minutes of history. Please follow your local regulations
-### when uncommenting and/or adjusting this setting.
+### the car keeps. The following adjusts the capture interval for cases where
+### the car only keeps 10 minutes of history. Please follow your local
+### regulations when uncommenting and/or adjusting this setting.
 # export SNAPSHOT_INTERVAL=480 # this number is in seconds
 
 ### Uncomment this to archive RecentClips in addition to SavedClips, SentryClips
@@ -67,21 +67,21 @@ export SHARE_PASSWORD=password
 # export ARCHIVE_TRACKMODECLIPS=false
 
 ### Notes on sd card and image sizes:
-###   * A 128 GB or larger sd card (or USB drive, when using Pi4) is recommended.
-###     The minimum supported size is 64 GB.
+###   * A 128 GB or larger sd card (or USB drive, when using Pi4) is
+###     recommended. The minimum supported size is 64 GB.
 ###   * When specifying sizes for the recordings and music drives, you can use
 ###     specific sizes (e.g. 24G) or use sizes relative to the available space
 ###     (e.g. 10%). It is recommended to use specific sizes.
-###   * The setup script will reserve a fixed 6 GB of space regardless of sd card
-###     size.
-###   * CAM_SIZE should generally be somewhat small, around 16G to 32G, unless you
-###     plan on accumulating a lot of footage between archive operations, in which
-###     case you should increase the value (an hour of recordings, or 6 Sentry
-###     events, is about 7-9 GB of data).
+###   * The setup script will reserve a fixed 6 GB of space regardless of SD
+###     card size.
+###   * CAM_SIZE should generally be somewhat small, around 16G to 32G, unless
+###     you plan on accumulating a lot of footage between archive operations, in
+###     which case you should increase the value (an hour of recordings, or 6
+###     Sentry events, is about 7-9 GB of data).
 ###   * As of Tesla software version 2020.48.10, the car will warn when the
-###     recording drive is smaller than 32 GB, but smaller values will still work.
-###     Tesla appears to use power-of-ten based sizes, presumably because most
-###     storage manufacturers do too.
+###     recording drive is smaller than 32 GB, but smaller values will still
+###     work. Tesla appears to use power-of-ten based sizes, presumably because
+###     most storage manufacturers do too.
 ###     Because teslausb uses power-of-two sizes, you can specify "30G" for the
 ###     size and not get the warning.
 ###   * MUSIC_SIZE should be large enough to hold your music library, obviously.
@@ -91,11 +91,10 @@ export CAM_SIZE=30G
 # export MUSIC_SIZE=4G
 # export BOOMBOX_SIZE=100M
 
-### If you want to automatically copy music from a CIFS share every time
-### the Pi connects to wifi, set the following variable. The share is
-### assumed to exist on the same server as the archive share. It can
-### be the same share as the share used for backing up recordings, but
-### the folder needs to be different.
+### If you want to automatically copy music from a CIFS share every time the Pi
+### connects to wifi, set the following variable. The share is assumed to exist
+### on the same server as the archive share. It can be the same share as the
+### share used for backing up recordings, but the folder needs to be different.
 # export MUSIC_SHARE_NAME=your_music_share/music_folder
 
 ### Wifi setup information. Note that Raspberry Pi Zero W only supports 2.4 GHz
@@ -122,8 +121,8 @@ export WIFIPASS='your_pass'
 # export SAMBA_GUEST=true
 
 ### Uncomment to enable teslausb to act as a wifi access point with the given
-### SSID, so you can access it while on the road. This should work on Raspberry Pi
-### but may not work on other devices.
+### SSID, so you can access it while on the road. This should work on Raspberry
+### Pi, but may not work on other devices.
 # export AP_SSID='TESLAUSB WIFI'
 ### Change this! The setup script will not accept the default 'password'
 ### Also note that the wifi password must be at least 8 characters.
@@ -243,10 +242,10 @@ export WIFIPASS='your_pass'
 ### that, provide your Tesla account refresh_token.
 ### TeslaUSB will only send your credentials to the Tesla API itself.
 ###
-### NOTE:  if you do this, it's highly recommended that you set up 'PIN to Drive'
-###   as if the Pi or the car is stolen, the thief has access to your Tesla
-###   account through that token, add their own devices as a key, steal the car,
-###   etc.
+### NOTE: if you do this, it's highly recommended that you set up 'PIN to
+###   Drive' as if the TeslaUSB device or the car is stolen, the thief has
+###   access to your Tesla account through that token, add their own devices as
+###   a key, steal the car, etc.
 ###   If either is stolen, CHANGE YOUR TESLA PASSWORD IMMEDIATELY.
 ###
 ### ALSO NOTE: having sentry mode enabled in your Tesla will keep your car awake.
@@ -258,28 +257,30 @@ export WIFIPASS='your_pass'
 ### Android: https://play.google.com/store/apps/details?id=net.leveugle.teslatokens
 ### iOS: https://apps.apple.com/us/app/auth-app-for-tesla/id1552058613#?platform=iphone
 ###
-### TeslaFi users may prefer to keep the car wake using TeslaFi API instead.
-### The advantage is not having to expose Tesla's Token and other info in this
-### file as plain text, which is a vulnerability should this file is compromised.
-### The TeslaFi API token can easily be revoked and a new one generated at anytime.
-### TeslaFi also allows selective command(s) enablement (e.g. disable unwated commands),
-### further decreasing vulnerability.
+### TeslaFi Subscriber?
+###   If you're a TeslaFi user, you may consider keeping the car wake using
+###   TeslaFi API instead. The advantage is not having to expose Tesla's Token
+###   and other info in this file as plain text, which is a vulnerability (as
+###   noted above. 'PIN to Drive' is not necessary in this case.
+###   The TeslaFi API token can easily be revoked and a new one generated at
+###   anytime. TeslaFi also allows selective command(s) enablement (e.g. disable
+###   uneeded commands), further decreasing vulnerability.
 ### 
 ### GENERATE/REVOKE TESLAFI API TOKEN: Log into your TeslaFi account.
 ###   Navigate to Settings -> Tesla API -> API Token (tab)
 ###
-### ENABLE/DISABLE TESLAFI API COMMANDS: Verify the 'Resume Polling' (wake) command is
-###   enabled. Do not confused this with the 'Wake Vehicle' command.
+### ENABLE/DISABLE TESLAFI API COMMANDS: Verify the 'Resume Polling' (wake)
+###   command is enabled. Do not confused this with the 'Wake Vehicle' command.
 ###   Navigate to Settings -> Tesla API -> Commands (tab)
 ###
 ### NOTE: Both APIs should NOT be used at the same time. Choose one.
 # export TESLA_REFRESH_TOKEN=YOUR_REFRESH_TOKEN_GOES_HERE
 # export TESLAFI_API_TOKEN=YOUR_TESLAFI_API_TOKEN_GOES_HERE
-
+###
 ### FOR TESLA API ONLY (not for TeslaFi at this time):
-###   If you have more than one Tesla vehicle on the account, you must also provide
-###   the name or VIN for the vehicle for which this TeslaUSB install will be used,
-###   so that TeslaUSB can keep the correct vehicle awake.
+###   If you have more than one Tesla vehicle on the account, you must also
+###   provide the name or VIN for the vehicle for which this TeslaUSB install
+###   will be used, so that TeslaUSB can keep the correct vehicle awake.
 ###   If you only have one car on the account, you do not need to specify this.
 # export TESLA_NAME="Elon's CyberTruck"
 # export TESLA_VIN=5YJ3E1EA4JF000001
@@ -292,32 +293,31 @@ export WIFIPASS='your_pass'
 ###   on Sentry mode while archiving.
 ### NOTE: Need to comment out if using TeslaFi.
 # export TESLA_WAKE_MODE=stream
-
-### Uncomment if you want to increase the size of the root
-### filesystem so there's extra space for installing additional
-### software. This only works if the backing store partition hasn't
-### been created yet, i.e. during early setup, and requires an extra
-### reboot. Sizes can be specified as for example "500M" or "2G"
+###
+### Uncomment if you want to increase the size of the root filesystem so there's
+### extra space for installing additional software. This only works if the
+### backing store partition hasn't been created yet, i.e. during early setup,
+### and requires an extra reboot. Sizes can be specified as for example "500M"
+### or "2G"
 # export INCREASE_ROOT_SIZE=500M
-
-### Uncomment if you want to have teslausb automatically install some
-### additional packages during setup. This only works if there is enough
-### free space available on the root partition to install the requested packages.
-### Requested packages should be space delineated
+###
+### Uncomment if you want to have teslausb automatically install some additional
+### packages during setup. This only works if there is enough free space
+### available on the root partition to install the requested packages.
+### Requested packages should be space delineated.
 # export INSTALL_USER_REQUESTED_PACKAGES="iftop mosh sysstat"
 
 ### Uncomment if you want to use different vm/cpu parameters.
-### Leave commented to use teslausb's defaults, or set to 'default'
-### to use the system defaults.
-### See https://www.kernel.org/doc/Documentation/sysctl/vm.txt
-### and https://www.kernel.org/doc/Documentation/cpu-freq/governors.txt
-### for details.
+### Leave commented to use teslausb's defaults, or set to 'default' to use the
+### system defaults.
+### See https://www.kernel.org/doc/Documentation/sysctl/vm.txt and
+### https://www.kernel.org/doc/Documentation/cpu-freq/governors.txt for details.
 # export DIRTY_BACKGROUND_BYTES=65536
 # export DIRTY_RATIO=80
 # export CPU_GOVERNOR=conservative
 
-### Uncomment and change if you want setup scripts to be pulled
-### from a different repo than github.com/marcone/teslausb
+### Uncomment and change if you want setup scripts to be pulled from a different
+### repo than github.com/marcone/teslausb
 # export REPO=marcone
 
 ### Uncomment and change if you want a different branch than main-dev
