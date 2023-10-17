@@ -57,6 +57,7 @@ function read_setup_variables {
   newnamefor[tesla_email]=TESLA_EMAIL
   newnamefor[tesla_password]=TESLA_PASSWORD
   newnamefor[tesla_vin]=TESLA_VIN
+  newnamefor[teslafi_api_token]=TESLAFI_API_TOKEN
   newnamefor[timezone]=TIME_ZONE
   newnamefor[usb_drive]=DATA_DRIVE
   newnamefor[USB_DRIVE]=DATA_DRIVE
