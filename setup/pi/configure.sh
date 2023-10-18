@@ -222,7 +222,7 @@ function check_teslafi_api () {
       log_progress "TeslaFi API enabled." 
     fi
   else
-    log_progress "TeslaFi API not enabled, because no TeslaFI credential were provided."
+    log_progress "TeslaFi API not enabled, because no TeslaFI credential was provided."
   fi
 }
 
