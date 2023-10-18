@@ -14,7 +14,6 @@ function ping {
     then
       if /root/bin/tesla_api.py streaming_ping
       then
-        log "Contact car every 90s using Tesla API to keep it awake."
         sleep 90
       else
         log "Failed to contact car using Tesla API, retrying in 5s..."
@@ -28,7 +27,6 @@ function ping {
       if [[ $(curl -s -H "Authorization: Bearer $TESLAFI_API_TOKEN" "https://www.teslafi.com/feed.php?command=wake") = "Wake command received" ]]
       then
         # TeslaFi's default sleep timer is 15min (900s). No need to contact too often to prevent API lockout (max 3 calls/min).
-        log "Contact car every 10min using TeslaFi API to keep it awake."
         sleep 600
       else
         log "Failed to contact car using TeslaFi API, retrying in 90s..."
