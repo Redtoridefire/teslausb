@@ -212,17 +212,17 @@ function check_teslafi_api () {
   then
     if [[ ( -n "${TESLA_REFRESH_TOKEN:+x}" ) ]]
     then
-      log_progress "STOP: You're trying to setup both Tesla and TeslaFi APIs."
+      log_progress "STOP: You're trying to setup Tesla and TeslaFi APIs at the same time."
       log_progress "Only 1 can be enabled at a time."
     elif [[ ( -n "${TESLA_WAKE_MODE:+x}" ) ]]    
     then
-      log_progress "STOP: You've setup for TeslaFi API, yet you've specified a TESLA_WAKE_MODE."
-      log_progress "Please comment out TESLA_WAK_MODE."   
+      log_progress "STOP: You've setup for TeslaFi API, yet you've specified a parameter for Tesla API."
+      log_progress "Please comment out TESLA_WAKE_MODE."   
     else
       log_progress "TeslaFi API enabled." 
     fi
   else
-    log_progress "TeslaFi API no enabled."
+    log_progress "TeslaFi API not enabled, because no TeslaFI credential were provided."
   fi
 }
 
