@@ -10,6 +10,12 @@ Raspberry Pi and other [SBCs](## "Single Board Computers") can emulate a USB dri
 - serve up a web UI to view or download the recordings
 - retain more than one hour of RecentClips (assuming large enough storage)
 
+- automatically copy the recordings to an archive server when you get home
+- hold both dashcam recordings and music files
+- automatically repair filesystem corruption produced by the Tesla's current failure to properly dismount the USB drives before cutting power to the USB ports
+- serve up a web UI to view or download the recordings
+- retain more than one hour of RecentClips (assuming large enough storage)
+
 This video (not mine) has a nice overview of teslausb and how to install it:
 
 [![teslausb intro and installation](http://img.youtube.com/vi/ETs6r1vKTO8/0.jpg)](http://www.youtube.com/watch?v=ETs6r1vKTO8 "teslausb intro and installation")
@@ -29,7 +35,7 @@ Required:
 
 - [A Raspberry Pi or other SBC that supports USB OTG](https://github.com/marcone/teslausb/wiki/Hardware).
 - A Micro SD card, at least 64 GB in size, and an adapter (if necessary) to connect the card to your computer.
-- Cable(s) to connect the SBC to the Tesla (USB A/Micro B cable for the Pi Zero, USB A/Micro C cable for Pi 4, other SBCs vary)
+- Cable(s) to connect the SBC to the Tesla (USB A/Micro B cable for the Pi Zero, USB A/Micro C cable for Pi 4, USB A/C cable for Pi 5, other SBCs vary)
 
 Optional:
 

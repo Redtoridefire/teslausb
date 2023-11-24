@@ -38,15 +38,17 @@ echo TeslaUSB > "$gadget_root/strings/$lang/manufacturer"
 echo "TeslaUSB Composite Gadget" > "$gadget_root/strings/$lang/product"
 echo "TeslaUSB Config" > "$gadget_root/configs/$cfg.1/strings/$lang/configuration"
 
-# A bare Raspberry Pi 4 can peak at at over 700 mA during boot, but idles around
-# 450 mA, while a Raspberry Pi 4 with a USB drive can peak at over 1 A during boot
-# and idle around 550 mA.
+# A bare Raspberry Pi 4 or 5 can peak at at over 700 mA during boot, but idles around
+# 450 mA or 540 mA respectively, while that Pi with a USB drive can peak at over 1 A 
+# during boot and idle around 550 mA or 600 mA respectively.
 # A Raspberry Pi Zero 2 W can peak at over 300 mA during boot, and has an idle power
 # use of about 100 mA.
 # A Raspberry Pi Zero W can peak up to 220 mA during boot, and has an idle power
 # use of about 80 mA.
-# The largest power demand the gadget can report is 500 mA.
-if isPi4
+if isPi5
+then
+  echo 600 > "$gadget_root/configs/$cfg.1/MaxPower"
+elif isPi4
 then
   echo 500 > "$gadget_root/configs/$cfg.1/MaxPower"
 elif isPi2
