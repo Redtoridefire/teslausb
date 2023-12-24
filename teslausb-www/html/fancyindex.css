@@ -1,16 +1,11 @@
-body,
-html {
+body, html {
   margin: 0;
   padding: 0;
   background: #fff;
   font-size: small;
 }
 
-table,
-tr,
-td,
-th,
-#list {
+table, tr, td, th, #list {
   border: none;
   background: transparent;
 }
