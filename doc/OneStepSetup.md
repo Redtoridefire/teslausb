@@ -16,38 +16,50 @@ This is a streamlined process for setting up the Pi. You'll flash a preconfigure
 
 1.  Mount the card again, and in the `boot` directory create a `teslausb_setup_variables.conf` file to export the same environment variables normally needed for manual setup (including archive info, Wifi, and push notifications (if desired).
     A sample conf file is located in the `boot` folder on the SD card. The latest sample is also available [from GitHub](https://github.com/marcone/teslausb/blob/main-dev/pi-gen-sources/00-teslausb-tweaks/files/teslausb_setup_variables.conf.sample).
-    The sample file contains documentation and suggestions for values. >**Note** >When creating/editing the configuration file on Windows, ensure that it is saved with the correct extension. It is recommended to disable the "hide extensions for known file types" option in Windows so you can see the full file name.
+    The sample file contains documentation and suggestions for values.
 
-        Be sure that all values, especially your WiFi SSID and password are properly quoted and/or escaped according to [bash quoting rules](https://www.gnu.org/software/bash/manual/bash.html#Quoting), and that in addition any `&`, `/` and `\` are also escaped by prefixing them with a `\`.
-        If the password does not contain a single quote character, you can enclose the entire password in single quotes, like so:
-        ```
-        export WIFIPASS='password'
-        ```
-        even if it contains other characters that might otherwise be special to bash, like \\, * and $ (but note that the \\ should still be escaped with an additional \\ in order for the password to be correctly handled)
+    > **Note** When creating/editing the configuration file on Windows, ensure that it is saved with the correct extension. It is recommended to disable the "hide extensions for known file types" option in Windows so you can see the full file name.
 
-        If the password does contain a single quote, you will need to use a different syntax. E.g. if the password is `pass'word`, you would use:
-        ```
-        export WIFIPASS=$'pass\'word'
-        ```
-        and if the password contains both a single quote and a backslash, e.g. `pass'wo\rd`you'd use:
-        ```
-        export WIFIPASS=$'pass\'wo\\rd'
-        ```
+    Be sure that all values, especially your WiFi SSID and password are properly quoted and/or escaped according to [bash quoting rules](https://www.gnu.org/software/bash/manual/bash.html#Quoting), and that in addition any `&`, `/` and `\` are also escaped by prefixing them with a `\`.
+    If the password does not contain a single quote character, you can enclose the entire password in single quotes, like so:
 
-        Similarly if your WiFi SSID has spaces in its name, make sure they're escaped or quoted.
+    ```
+    export WIFIPASS='password'
+    ```
 
-        For example, if your SSID were
-        ```
-        Foo Bar 2.4 GHz
-        ```
-        you would use
-        ```
-        export SSID=Foo\ Bar\ 2.4\ GHz
-        ```
-        or
-        ```
-        export SSID='Foo Bar 2.4 GHz'
-        ```
+    even if it contains other characters that might otherwise be special to bash, like \\, \* and $ (but note that the \\ should still be escaped with an additional \\ in order for the password to be correctly handled)
+
+    If the password does contain a single quote, you will need to use a different syntax. E.g. if the password is `pass'word`, you would use:
+
+    ```
+    export WIFIPASS=$'pass\'word'
+    ```
+
+    and if the password contains both a single quote and a backslash, e.g. `pass'wo\rd`you'd use:
+
+    ```
+    export WIFIPASS=$'pass\'wo\\rd'
+    ```
+
+    Similarly if your WiFi SSID has spaces in its name, make sure they're escaped or quoted.
+
+    For example, if your SSID were
+
+    ```
+    Foo Bar 2.4 GHz
+    ```
+
+    you would use
+
+    ```
+    export SSID=Foo\ Bar\ 2.4\ GHz
+    ```
+
+    or
+
+    ```
+    export SSID='Foo Bar 2.4 GHz'
+    ```
 
 1.  Boot it in your Pi, give it a few minutes, watching for a series of flashes (2, 3, 4, 5) and then a reboot and/or the CAM/music drives to become available on your PC/Mac. If you configured automatic music syncing, the drives won't be available on the PC/Mac until music syncing is complete. The LED flash stages during setup are:
 
@@ -111,7 +123,7 @@ When the Pi boots the first time:
 
 At this point the next boot should start the Dashcam/music drives like normal. If you're watching the LED it will start flashing every 1 second, which is the archive loop running.
 
-> NOTE: Don't delete the `TESLAUSB_SETUP_FINISHED` or `WIFI_ENABLED` files. This is how the system knows setup is complete.
+> **Note** Don't delete the `TESLAUSB_SETUP_FINISHED` or `WIFI_ENABLED` files. This is how the system knows setup is complete.
 
 # Image modification sources
 

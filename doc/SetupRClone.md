@@ -29,7 +29,7 @@ Below are the old instructions in case you want to do things the hard way.
 
 # Legacy instructions
 
-**NOTE: it is recommended you follow the "Easy rclone setup" instructions listed above instead**
+> **Note** it is recommended you follow the "Easy rclone setup" instructions listed above instead
 
 You must perform these steps **after** getting a shell on the Pi and **before** running the `setup-teslacam` script on the Pi.
 
@@ -46,12 +46,12 @@ These instructions will speed you through the process with good defaults. If you
    ```
    sudo -i
    ```
-1. Run these commands. Specify the config name `gdrive` when prompted for the config name.
+2. Run these commands. Specify the config name `gdrive` when prompted for the config name.
    ```
    curl https://rclone.org/install.sh | sudo bash
    rclone config
    ```
-1. Run these commands:
+3. Run these commands:
 
    ```
    export ARCHIVE_SYSTEM=rclone
@@ -62,7 +62,7 @@ These instructions will speed you through the process with good defaults. If you
    rclone lsd "$RCLONE_DRIVE":
    ```
 
-1. If you didn't encounter any error messages and you see the `TeslaCam` directory listed, stay in your `sudo -i` session and return to the [Main Instructions](../README.md).
+4. If you didn't encounter any error messages and you see the `TeslaCam` directory listed, stay in your `sudo -i` session and return to the [Main Instructions](../README.md).
 
 # Detailed instructions
 
@@ -94,7 +94,7 @@ These instructions will speed you through the process with good defaults. If you
 
    **Important:** During the `rclone config` process you will specify a name for the configuration. The rest of the document will assume the use of the name `gdrive`; replace this with your chosen configuration name.
 
-1. Run this command:
+2. Run this command:
    ```
    export RCLONE_DRIVE="gdrive"
    ```
@@ -106,21 +106,23 @@ These instructions will speed you through the process with good defaults. If you
    rclone listremotes
    ```
    If you don't see the name there, something went wrong. Go back through the `rclone config` process.
-1. Run this command:
+2. Run this command:
    ```
    rclone lsd "$RCLONE_DRIVE":
    ```
    You should not see any files listed. If you do then you did not set your scope correctly during the `rclone config` process.
-1. Choose the name of a folder to hold the archived clips. These instructions will assume you chose the name `TeslaCam`. Substitute the name you chose for this name. Run this command:
+3. Choose the name of a folder to hold the archived clips. These instructions will assume you chose the name `TeslaCam`. Substitute the name you chose for this name. Run this command:
    ```
    export RCLONE_PATH="TeslaCam"
    ```
-1. Run the following command to create a folder which will hold the archived clips.
+4. Run the following command to create a folder which will hold the archived clips.
    ```
    rclone mkdir "$RCLONE_DRIVE:TeslaCam"
    ```
-1. Run this command again:
-   `    rclone lsd "$RCLONE_DRIVE":`
+5. Run this command again:
+   ```
+   rclone lsd "$RCLONE_DRIVE":
+   ```
    Confirm that the directory `TeslaCam` is present. If not, start over.
 
 # Step 4: Exports

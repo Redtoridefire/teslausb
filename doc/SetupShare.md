@@ -10,11 +10,11 @@ Now, on the Pi:
    ```
    sudo -i
    ```
-1. Try to ping your archive server from the Pi. In this example the server is named `nautilus`.
+2. Try to ping your archive server from the Pi. In this example the server is named `nautilus`.
    ```
    ping -c 3 nautilus
    ```
-1. If the server can't be reached, ping its IP address (These instructions will assume that the IP address of the archive server is `192.168.0.41`.):
+3. If the server can't be reached, ping its IP address (These instructions will assume that the IP address of the archive server is `192.168.0.41`.):
 
    ```
    ping 192.168.0.41
@@ -29,7 +29,7 @@ Now, on the Pi:
 
    If you can't reach the archive server by name but you can by IP address then use its IP address, below, for the `ARCHIVE_SERVER` variable.
 
-1. Run these commands, subsituting your values:
+4. Run these commands, subsituting your values:
    ```
    export ARCHIVE_SYSTEM="cifs"
    export ARCHIVE_SERVER="Nautilus"
