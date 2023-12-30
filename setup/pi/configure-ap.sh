@@ -22,6 +22,12 @@ then
   exit 1
 fi
 
+if [ ! -e /etc/wpa_supplicant/wpa_supplicant.conf ]
+then
+  log_progress "No wpa_supplicant, skipping AP setup."
+  exit 0
+fi
+
 if ! grep -q id_str /etc/wpa_supplicant/wpa_supplicant.conf
 then
   IP=${AP_IP:-"192.168.66.1"}
@@ -92,6 +98,13 @@ then
 	iface wlan0 inet manual
 	    wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf
 	iface AP1 inet dhcp
+	EOF
+
+  # For bullseye it is apparently necessary to explicitly disable wpa_supplicant for the ap0 interface
+  cat <<- EOF >> /etc/dhcpcd.conf
+	# disable wpa_supplicant for the ap0 interface
+	interface ap0
+	nohook wpa_supplicant
 	EOF
 
   if [ ! -L /var/lib/misc ]

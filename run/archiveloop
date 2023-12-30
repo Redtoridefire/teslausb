@@ -6,7 +6,7 @@ then
   return 1 # shouldn't use exit when sourced
 fi
 
-# Unload the module that was loaded by /boot/cmdline.txt
+# Unload the module that was loaded by cmdline.txt
 modprobe -r g_ether
 
 export LOG_FILE=/mutable/archiveloop.log
@@ -51,11 +51,11 @@ source /root/bin/envsetup.sh
 
 # led triggers may have been built as modules, so try
 # to load them
-if ! grep -q timer "$STATUSLED"
+if ! grep -q timer "$STATUSLED/trigger"
 then
   modprobe ledtrig-timer || log "timer LED trigger unavailable"
 fi
-if ! grep -q heartbeat "$STATUSLED"
+if ! grep -q heartbeat "$STATUSLED/trigger"
 then
   modprobe ledtrig-heartbeat || log "heartbeat LED trigger unavailable" 
 fi
@@ -78,10 +78,6 @@ then
       ;;
   esac
 fi
-
-function isKernel5 {
-  grep -q '^5\.' <<< "$(uname -r)"
-}
 
 function timestamp () {
   local prefix=${1:-}
@@ -680,39 +676,20 @@ function truncate_log () {
 
 function slowblink () {
   echo timer > "$STATUSLED/trigger" || return 0
-  local ON=on
-  local OFF=off
-  if isPi4 || isKernel5
-  then
-    ON=off
-    OFF=on
-  fi
-  echo 900 > "$STATUSLED/delay_$ON"
-  echo 100 > "$STATUSLED/delay_$OFF"
+  echo 900 > "$STATUSLED/delay_off"
+  echo 100 > "$STATUSLED/delay_on"
 }
 
 function fastblink () {
   echo timer > "$STATUSLED/trigger" || return 0
-  local ON=on
-  local OFF=off
-  if isPi4 || isKernel5
-  then
-    ON=off
-    OFF=on
-  fi
-  echo 150 > "$STATUSLED/delay_$ON"
-  echo 50 > "$STATUSLED/delay_$OFF"
+  echo 150 > "$STATUSLED/delay_off"
+  echo 50 > "$STATUSLED/delay_on"
 }
 
 
 function doubleblink () {
   echo heartbeat > "$STATUSLED/trigger" || return 0
-  if isPi4 || isKernel5
-  then
-    echo 0 > "$STATUSLED/invert"
-  else
-    echo 1 > "$STATUSLED/invert"
-  fi
+  echo 0 > "$STATUSLED/invert"
 }
 
 function set_time () {

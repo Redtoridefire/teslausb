@@ -2,7 +2,7 @@
 
 if [[ $EUID -ne 0 ]]
 then
-  setup_progress "STOP: Run sudo -i."
+  echo "STOP: Run sudo -i."
   exit 1
 fi
 
@@ -38,9 +38,18 @@ function setup_progress () {
 
 function curlwrapper () {
   setup_progress "curl $*" > /dev/null
-  while ! curl -s --fail "$@"
+  local attempts=0
+  while ! curl -s -S --stderr /tmp/curl.err --fail "$@"
   do
+    attempts=$((attempts + 1))
+    if [ "$attempts" -ge 20 ]
+    then
+      setup_progress "giving up after 20 tries"
+      setup_progress "$(cat /tmp/curl.err)"
+      exit 1
+    fi
     setup_progress "'curl $*' failed, retrying" > /dev/null
+    sntp -S time.google.com || true
     sleep 3
   done
 }
@@ -68,10 +77,25 @@ function copy_script () {
     fi
   fi
 
-  # shellcheck disable=SC2086
   cp "${SOURCE_DIR}/$remote_path" "$local_path/$name"
   chmod +x "$local_path/$name"
   setup_progress "Downloaded $local_path/$name ..."
+}
+
+function safesource {
+  cat <<EOF > /tmp/checksetupconf
+#!/bin/bash -eu
+source '$1' &> /tmp/checksetupconf.out
+EOF
+  chmod +x /tmp/checksetupconf
+  if ! /tmp/checksetupconf
+  then
+    setup_progress "Error in $1:"
+    setup_progress "$(cat /tmp/checksetupconf.out)"
+    exit 1
+  fi
+  # shellcheck disable=SC1090
+  source "$1"
 }
 
 THISDIR=$(dirname "$(readlink -f "$0")")
@@ -79,7 +103,7 @@ if [ ! -e "$THISDIR/envsetup.sh" ]
 then
   # source the conf file directly to get REPO, BRANCH or download_sources
   # in case they're set
-  source /root/teslausb_setup_variables.conf
+  safesource /root/teslausb_setup_variables.conf
   REPO=${REPO:-marcone}
   BRANCH=${BRANCH:-main-dev}
   copy_script setup/pi/envsetup.sh "$THISDIR"
@@ -97,7 +121,7 @@ REBOOT=false
 # wpa_supplicant should have a country code. Use US as the default
 # to avoid using the disallowed channels in the US.
 WPA=/etc/wpa_supplicant/wpa_supplicant.conf
-if [ -e "$WPA" ] && ! grep -q "country=" $WPA
+if [ -e "$WPA" ] && ! grep -q "country=" $WPA && grep -q "network=" $WPA
 then
   setup_progress "adding country code to wpa_supplicant.conf"
   echo "country=US" >> $WPA
@@ -135,7 +159,7 @@ fi
 
 if [ "$REBOOT" = "true" ]
 then
-  if [ -t 0 ]
+  if [ -t 0 ] && [ "${NO_REBOOT_PROMPT:-}" != "1" ]
   then
     setup_progress "please reboot for changes to take effect"
     exit
@@ -211,30 +235,30 @@ function get_common_scripts () {
 # module (the attached host will see no device at all at this point)
 # before creating the mass storage gadget.
 function fix_cmdline_txt_modules_load () {
-  if [ ! -e /boot/cmdline.txt ]
+  if [ ! -f "$CMDLINE_PATH" ]
   then
-    setup_progress "/boot/cmdline.txt does not exist, skipping"
+    setup_progress "cmdline.txt does not exist, skipping"
     return
   fi
   # Extract the modules-load portion of the command line.
   # Note that this not handle spaces in the argument.
   local curparam
-  curparam=$(grep -P -o " modules.load=[^\s\$]*" /boot/cmdline.txt || true)
+  curparam=$(grep -P -o " modules.load=[^\s\$]*" "$CMDLINE_PATH" || true)
   if [[ "$curparam" == "" ]]
   then
     curparam="\$"
   elif [[ "$curparam" == *"dwc2"* ]] && [[ "$curparam" == *"g_ether"* ]]
   then
-    setup_progress "/boot/cmdline.txt is up to date"
+    setup_progress "cmdline.txt is up to date"
     return
   fi
 
   # replace the current parameter
-  setup_progress "Updated /boot/cmdline.txt from:"
-  setup_progress "$(cat /boot/cmdline.txt)"
-  sed -i "s/${curparam}/ modules-load=dwc2,g_ether/" /boot/cmdline.txt
+  setup_progress "Updated cmdline.txt from:"
+  setup_progress "$(cat "$CMDLINE_PATH")"
+  sed -i "s/${curparam}/ modules-load=dwc2,g_ether/" "$CMDLINE_PATH"
   setup_progress "to:"
-  setup_progress "$(cat /boot/cmdline.txt)"
+  setup_progress "$(cat "$CMDLINE_PATH")"
 }
 
 BACKINGFILES_MOUNTPOINT=/backingfiles
@@ -400,7 +424,6 @@ function set_timezone () {
     then
       if curlwrapper -o /root/bin/tzupdate.py https://raw.githubusercontent.com/marcone/tzupdate/develop/tzupdate.py
       then
-        apt-get -y --force-yes install python-requests
         chmod +x /root/bin/tzupdate.py
         if ! tzout=$(/root/bin/tzupdate.py 2>&1)
         then
@@ -475,7 +498,7 @@ function cmd_upgrade {
   fi
   copy_script setup/pi/setup-teslausb /tmp &> /dev/null
   copy_script setup/pi/envsetup.sh /tmp &> /dev/null
-  exec bash -c "/tmp/setup-teslausb upgrade_prepare && /tmp/setup-teslausb && /tmp/setup-teslausb upgrade_finish" < /dev/null
+  exec bash -c "/tmp/setup-teslausb upgrade_prepare && NO_REBOOT_PROMPT=1 /tmp/setup-teslausb && /tmp/setup-teslausb upgrade_finish"
 }
 
 function cmd_upgrade_prepare {
@@ -782,12 +805,12 @@ then
   fi
 fi
 
-# Update /boot/config.txt if needed
-if [ -e /boot/config.txt ]
+# Update config.txt if needed
+if [ -f "$PICONFIG_PATH" ]
 then
-  if ! grep -q 'dtoverlay=dwc2' /boot/config.txt
+  if ! grep -q 'dtoverlay=dwc2' "$PICONFIG_PATH"
   then
-    echo -e "dtoverlay=dwc2\n" >> /boot/config.txt
+    echo -e "dtoverlay=dwc2\n" >> "$PICONFIG_PATH"
     setup_progress "rebooting to apply dwc2 overlay change"
     reboot
     exit 0
@@ -895,11 +918,13 @@ sed -i '/source \/root\/bin\/setup-teslausb/d' /root/.bashrc
 if ! grep -q TESLAUSB_TIP1 /root/.bashrc
 then
   cat >> /root/.bashrc <<- EOC
-	cat << TESLAUSB_TIP1
-	Run 'bin/setup-teslausb upgrade' to update to the latest version of teslausb,
-	or run 'bin/remountfs_rw' to allow writing to the root partition.
+	if [ -n "\$PS1" ]; then
+		cat << TESLAUSB_TIP1
+		Run 'bin/setup-teslausb upgrade' to update to the latest version of teslausb,
+		or run 'bin/remountfs_rw' to allow writing to the root partition.
 
-	TESLAUSB_TIP1
+		TESLAUSB_TIP1
+	fi
 	EOC
 fi
 
@@ -909,10 +934,12 @@ then
   if ! grep -q TESLAUSB_TIP1 "/home/$DEFUSER/.bashrc"
   then
     cat >> "/home/$DEFUSER/.bashrc" <<- EOC
-	cat << TESLAUSB_TIP1
-	Run 'sudo -i' if you need to make changes.
+	if [ -n "\$PS1" ]; then
+		cat << TESLAUSB_TIP1
+		Run 'sudo -i' if you need to make changes.
 
-	TESLAUSB_TIP1
+		TESLAUSB_TIP1
+	fi
 	EOC
   fi
 fi
@@ -921,6 +948,13 @@ make_root_fs_readonly
 
 upgrade_packages
 
+if [ -n "${INSTALL_USER_REQUESTED_PACKAGES:-}" ]
+then
+  setup_progress "Installing user requested packages: ${INSTALL_USER_REQUESTED_PACKAGES}"
+  read -r -a EXTRA_PACKAGES <<< "${INSTALL_USER_REQUESTED_PACKAGES[@]}"
+  DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes install "${EXTRA_PACKAGES[@]}"
+fi
+
 headless_setup_mark_setup_success
 
 # Flash for stage 5 headless (Mark success, FS readonly)
@@ -928,7 +962,7 @@ headless_setup_progress_flash 5
 
 setup_progress "All done."
 
-if [ -t 0 ]
+if [ -t 0 ] && [ "${NO_REBOOT_PROMPT:-}" != "1" ]
 then
   setup_progress '(reboot now for changes to take effect)'
 fi

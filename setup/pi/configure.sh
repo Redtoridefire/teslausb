@@ -97,7 +97,7 @@ function check_rsync {
   if install_prebuilt_rsync
   then
     chmod a+x /usr/local/bin/rsync
-    apt install -y libxxhash0
+    apt install -y libxxhash0 libssl-dev
     if check_default_rsync
     then
       log_progress "rsync works OK now"
@@ -167,6 +167,11 @@ function get_archive_module () {
     esac
 }
 
+function pip3_install () {
+  rm -f /usr/lib/$(py3versions -d)/EXTERNALLY-MANAGED
+  pip3 install "$@"
+}
+
 function install_and_configure_tesla_api () {
   # Install the tesla_api.py script only if the user provided credentials for its use.
 
@@ -176,7 +181,7 @@ function install_and_configure_tesla_api () {
     log_progress "Updating tesla_api.py"
     copy_script run/tesla_api.py /root/bin
     install_python3_pip
-    pip3 install teslapy
+    pip3_install teslapy
     # check if the json file needs to be updated
     readonly json=/mutable/tesla_api.json
     if [ -e $json ] && ! grep -q '"id"' $json
@@ -195,7 +200,7 @@ function install_and_configure_tesla_api () {
     log_progress "Installing tesla_api.py"
     copy_script run/tesla_api.py /root/bin
     install_python3_pip
-    pip3 install teslapy
+    pip3_install teslapy
     # Perform the initial authentication
     mount /mutable || log_progress "Failed to mount /mutable"
     if ! /root/bin/tesla_api.py list_vehicles
@@ -203,7 +208,26 @@ function install_and_configure_tesla_api () {
       log_progress "tesla_api.py setup failed"
     fi
   else
-    log_progress "Skipping tesla_api.py install because no credentials were provided"
+    log_progress "Skipping tesla_api.py install because no Tesla credentials were provided."
+  fi
+}
+
+function check_teslafi_api () {
+  if [[ ( -n "${TESLAFI_API_TOKEN:+x}" ) ]]
+  then
+    if [[ ( -n "${TESLA_REFRESH_TOKEN:+x}" ) ]]
+    then
+      log_progress "STOP: You're trying to setup Tesla and TeslaFi APIs at the same time."
+      log_progress "Only 1 can be enabled at a time."
+    elif [[ ( -n "${TESLA_WAKE_MODE:+x}" ) ]]    
+    then
+      log_progress "STOP: You've setup for TeslaFi API, yet you've specified a parameter for Tesla API."
+      log_progress "Please comment out TESLA_WAKE_MODE."   
+    else
+      log_progress "TeslaFi API enabled." 
+    fi
+  else
+    log_progress "TeslaFi API not enabled because no TeslaFi credential was provided."
   fi
 }
 
@@ -242,13 +266,13 @@ function install_python3_pip () {
 function install_sns_packages () {
   install_python3_pip
   setup_progress "Installing sns python packages..."
-  pip3 install boto3
+  pip3_install boto3
 }
 
 function install_matrix_packages () {
   install_python3_pip
   setup_progress "Installing matrix python packages..."
-  pip3 install matrix-nio
+  pip3_install matrix-nio
 }
 
 function check_signal_configuration () {
@@ -607,6 +631,7 @@ fi
 
 mkdir -p /root/bin
 
+check_teslafi_api
 check_and_configure_pushover
 check_and_configure_gotify
 check_and_configure_ifttt

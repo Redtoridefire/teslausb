@@ -14,6 +14,10 @@ function flash_rapidly {
   do 
     if [ -e "$led/trigger" ]
     then
+      if ! grep -q timer "$led/trigger"
+      then
+        modprobe ledtrig-timer || echo "timer LED trigger unavailable"
+      fi
       echo timer > "$led/trigger" || true
       if [ -e "$led/delay_off" ]
       then
@@ -75,7 +79,12 @@ then
       # This device did not boot using an initramfs. If we're running
       # Raspberry Pi OS, we can switch it over to using initramfs first,
       # then revert back after.
-      if [ -e /boot/issue.txt ] && grep -q Raspberry /boot/issue.txt && [ -e /boot/config.txt ]
+      ISSUE=/boot/issue.txt
+      if [ -f /boot/firmware/issue.txt ]
+      then
+        ISSUE=/boot/firmware/issue.txt
+      fi
+      if [ -f "$ISSUE" ] && grep -q Raspberry "$ISSUE" && [ -e /boot/config.txt ]
       then
         echo "Temporarily switching Rasspberry Pi OS to use initramfs"
         update-initramfs -c -k "$(uname -r)"
@@ -171,7 +180,7 @@ then
 		  echo "+-------------------------------------------+"
 		fi
 	EOF
-    chown "$DEFUSER.$DEFUSER" "/home/$DEFUSER/.bashrc"
+    chown "$DEFUSER:$DEFUSER" "/home/$DEFUSER/.bashrc"
   fi
 fi
 

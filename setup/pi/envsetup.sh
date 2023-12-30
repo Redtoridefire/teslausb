@@ -6,6 +6,28 @@ then
   exit 1
 fi
 
+function safesource {
+  cat <<EOF > /tmp/checksetupconf
+#!/bin/bash -eu
+source '$1' &> /tmp/checksetupconf.out
+EOF
+  chmod +x /tmp/checksetupconf
+  if ! /tmp/checksetupconf
+  then
+    if declare -F setup_progress > /dev/null
+    then
+      setup_progress "Error in $1:"
+      setup_progress "$(cat /tmp/checksetupconf.out)"
+    else
+      echo "Error in $1:"
+      cat /tmp/checksetupconf.out
+    fi
+    exit 1
+  fi
+  # shellcheck disable=SC1090
+  source "$1"
+}
+
 function read_setup_variables {
   if [ -z "${setup_file+x}" ]
   then
@@ -15,7 +37,7 @@ function read_setup_variables {
   then
     # "shellcheck" doesn't realize setup_file is effectively a constant
     # shellcheck disable=SC1090
-    source $setup_file
+    safesource $setup_file
   else
     echo "couldn't find $setup_file"
     return 1
@@ -137,6 +159,7 @@ export -f isRadxaZero
 
 for STATUSLED in \
   /sys/class/leds/led0 \
+  /sys/class/leds/ACT \
   /sys/class/leds/user-led2 \
   /sys/class/leds/radxa-zero:green \
   /tmp/fakeled
@@ -151,3 +174,24 @@ if [ ! -d "$STATUSLED" ]
 then
   mkdir -p "$STATUSLED"
 fi
+
+if [ -f /boot/firmware/cmdline.txt ]
+then
+  export CMDLINE_PATH=/boot/firmware/cmdline.txt
+elif [ -f /boot/cmdline.txt ]
+then
+  export CMDLINE_PATH=/boot/cmdline.txt
+else
+  export CMDLINE_PATH=/dev/null
+fi
+
+if [ -f /boot/firmware/config.txt ]
+then
+  export PICONFIG_PATH=/boot/firmware/config.txt
+elif [ -f /boot/config.txt ]
+then
+  export PICONFIG_PATH=/boot/config.txt
+else
+  export PICONFIG_PATH=/dev/null
+fi
+
