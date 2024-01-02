@@ -1,13 +1,13 @@
 name: "Bug report"
 description: Create a new report
 body:
-    - type: markdown
-      attributes:
-        value: |
-          **Is this the right place for my bug report?**
-          If you simply have a question, please check the [FAQ](/marcone/teslausb/wiki/FAQ) first, and/or check the [troubleshooting steps](/marcone/teslausb/wiki/Troubleshooting). If those do not answer your question use [Discord](https://discord.gg/b4MHf2x).
-          If you you are reporting a problem with teslausb itself, this is the right place.
-          If the problem is a more general Linux or Raspberry Pi OS problem, then [the Raspberry Pi forums](https://www.raspberrypi.org/forums) may offer some help
+  - type: markdown
+    attributes:
+      value: |
+        **Is this the right place for my bug report?**
+        If you simply have a question, please check the [FAQ](/marcone/teslausb/wiki/FAQ) first, and/or check the [troubleshooting steps](/marcone/teslausb/wiki/Troubleshooting). If those do not answer your question use [Discord](https://discord.gg/b4MHf2x).
+        If you you are reporting a problem with teslausb itself, this is the right place.
+        If the problem is a more general Linux or Raspberry Pi OS problem, then [the Raspberry Pi forums](https://www.raspberrypi.org/forums) may offer some help
 
   - type: textarea
     id: description
@@ -18,22 +18,22 @@ body:
     validations:
       required: true
 
-    - type: dropdown
-      id: devicemodel
-      attributes:
-        label: Device
-        description: What model device are you using?
-        multiple: false
-        options:
-          - Raspberry Pi Zero W
-          - Raspberry Pi Zero 2 W
-          - Raspberry Pi 4
+  - type: dropdown
+    id: devicemodel
+    attributes:
+      label: Device
+      description: What model device are you using?
+      multiple: false
+      options:
+        - Raspberry Pi Zero W
+        - Raspberry Pi Zero 2 W
+        - Raspberry Pi 4
         - Raspberry Pi 5
-          - Radxa Zero
-          - Rock Pi 4C plus
-          - Other
-      validations:
-        required: true
+        - Radxa Zero
+        - Rock Pi 4C plus
+        - Other
+    validations:
+      required: true
 
   - type: dropdown
     id: image
