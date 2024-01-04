@@ -59,7 +59,3 @@ Additional options for rsync over ssh can be configured using `~/.ssh/config` su
 
 Stay in the `sudo -i` session return to the section "Set up the USB storage functionality" in the [main instructions](../README.md).
 
-# Step 3: Networking
-If you have a firewall between the server and teslausb you will need to allow ports 22 and ICMP.
-Port 22 is used for the rsync service
-ICMP is used to verify the archive is reachable from teslausb
