@@ -68,4 +68,3 @@ export RSYNC_PATH=/mnt/PIHDD/TeslaCam/
 Additional options for rsync over ssh can be configured using `~/.ssh/config` such as port number. To see all available options visit [the man page](https://linux.die.net/man/5/ssh_config).
 
 Stay in the `sudo -i` session return to the section "Set up the USB storage functionality" in the [main instructions](../README.md).
-
