@@ -9,6 +9,15 @@ case "$1" in
     ;;
 esac
 
+case "$1" in
+  LightShow)
+    diskimage="/backingfiles/lightshow_disk.bin"
+    ;;
+  *)
+    exit 1
+    ;;
+esac
+
 optfile="${diskimage}.opts"
 
 if [ ! -r "$diskimage" ]
