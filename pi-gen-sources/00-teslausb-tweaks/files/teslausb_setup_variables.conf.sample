@@ -12,11 +12,11 @@
 # Variables for CIFS (Windows/Mac file sharing) archiving.
 # If you want to use rsync or rclone, delete or comment out this section
 # and uncomment the rsync or rclone section below.
-export ARCHIVE_SYSTEM=cifs
-export ARCHIVE_SERVER=your_archive_name_or_ip
-export SHARE_NAME='your_archive_share/optional_path_on_share'
-export SHARE_USER=username
-export SHARE_PASSWORD='password'
+#export ARCHIVE_SYSTEM=cifs
+#export ARCHIVE_SERVER=your_archive_name_or_ip
+#export SHARE_NAME='your_archive_share/optional_path_on_share'
+#export SHARE_USER=username
+#export SHARE_PASSWORD='password'
 # the cifs options below usually don't need to be specified
 # export SHARE_DOMAIN=domain
 # export CIFS_VERSION="3.0"
@@ -91,9 +91,10 @@ export SHARE_PASSWORD='password'
 #   * MUSIC_SIZE should be large enough to hold your music library, obviously.
 #   * If no music size is specified, no music drive will be created.
 #   * If no boombox size is specified, no boombox drive will be created.
-export CAM_SIZE=30G
-#export MUSIC_SIZE=4G
-#export BOOMBOX_SIZE=100M
+export CAM_SIZE=80%
+export MUSIC_SIZE=15%
+export LIGHTSHOW_SIZE=2%
+export BOOMBOX_SIZE=100M
 
 # If you want to automatically copy music from a CIFS share every time
 # the Pi connects to wifi, set the following variable. The share is
@@ -108,8 +109,8 @@ export CAM_SIZE=30G
 # edit /boot/wpa_supplicant.conf.sample and un-comment the indicated line.
 # You do not need to set these variables if networking is already configured
 # and you ran the "install.sh" script
-export SSID='your_ssid'
-export WIFIPASS='your_pass'
+#export SSID='your_ssid'
+#export WIFIPASS='your_pass'
 
 # Uncomment to use ExFAT filesystem instead of FAT32.
 # ExFAT is the filesystem used by Tesla when the drive is formatted in the car.
@@ -311,7 +312,7 @@ export WIFIPASS='your_pass'
 # software. This only works if the backing store partition hasn't
 # been created yet, i.e. during early setup, and requires an extra
 # reboot. Sizes can be specified as for example "500M" or "2G"
-# export INCREASE_ROOT_SIZE=500M
+export INCREASE_ROOT_SIZE=10G
 
 # Uncomment if you want to have teslausb automatically install some
 # additional packages during setup. This only works if there is enough
@@ -330,8 +331,8 @@ export WIFIPASS='your_pass'
 #export CPU_GOVERNOR=conservative
 
 # Uncomment and change if you want setup scripts to be pulled
-# from a different repo than github.com/marcone/teslausb
-# export REPO=marcone
+# from a different repo than github.com/MagoKimbra/teslausb
+export REPO=MagoKimbra
 
 # Uncomment and change if you want a different branch than main-dev
 # export BRANCH=main-dev
