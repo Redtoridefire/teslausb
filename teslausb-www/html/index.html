@@ -1626,8 +1626,12 @@ function readconfig() {
   readfile({url:'cgi-bin/config.sh', callback:function(value) {
     statusvals=JSON.parse(value);
     var musictab = document.querySelector(".tablabel6");
+    var lightshowtab = document.querySelector(".tablabel7");
     if (statusvals.has_music == "yes" && musictab.style.display == "") {
       musictab.style.display = "inline-block";
+    }
+    if (statusvals.has_lightshow == "yes" && lightshowtab.style.display == "") {
+      lightshowtab.style.display = "inline-block";
     }
   }});
 }
@@ -2704,7 +2708,7 @@ var fb = document.querySelector("#musicbrowser");
 new FileBrowser(fb, "fs/Music" /* relative path */, "Music" /* label */);
 
 var fb = document.querySelector("#lightshowbrowser");
-new FileBrowser(fb, "fs/lightshow" /* relative path */, "LightShow" /* label */);
+new FileBrowser(fb, "fs/LightShow" /* relative path */, "LightShow" /* label */);
 
 </script>
 </body>
