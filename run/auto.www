@@ -4,12 +4,6 @@ case "$1" in
   Music)
     diskimage="/backingfiles/music_disk.bin"
     ;;
-  *)
-    exit 1
-    ;;
-esac
-
-case "$1" in
   LightShow)
     diskimage="/backingfiles/lightshow_disk.bin"
     ;;
