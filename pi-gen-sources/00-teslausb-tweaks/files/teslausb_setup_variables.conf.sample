@@ -90,6 +90,8 @@
 #     size and not get the warning.
 #   * MUSIC_SIZE should be large enough to hold your music library, obviously.
 #   * If no music size is specified, no music drive will be created.
+#   * LIGHTSHOW_SIZE should be large enough to hold your Lightshow library, obviously.
+#   * If no lightshow size is specified, no music drive will be created.
 #   * If no boombox size is specified, no boombox drive will be created.
 export CAM_SIZE=80%
 export MUSIC_SIZE=15%
