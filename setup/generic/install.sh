@@ -189,17 +189,17 @@ then
   cat <<- EOF >> /root/.bashrc
 	if [ ! -e /boot/TESLAUSB_SETUP_FINISHED ]
 	then
-	  echo "+------------------------------------------------------------------------+"
-	  echo "| To continue teslausb setup, edit the file                              |"
-	  echo "| /boot/teslausb_setup_variables.conf with your favorite                 |"
-	  echo "| editor, e.g. 'nano /boot/teslausb_setup_variables.conf' and fill in    |"
-	  echo "| the required variables. Instructions are in the file, and at           |"
-	  echo "| https://github.com/marcone/teslausb/blob/main-dev/doc/OneStepSetup.md  |"
-	  echo "| (though ignore the Raspberry Pi specific bits about flashing and       |"
-	  echo "| mounting the sd card on a PC)                                          |"
-	  echo "|                                                                        |"
-	  echo "| When done, save changes and run /etc/rc.local                          |"
-	  echo "+------------------------------------------------------------------------+"
+	  echo "+---------------------------------------------------------------------------+"
+	  echo "| To continue teslausb setup, edit the file                                 |"
+	  echo "| /boot/teslausb_setup_variables.conf with your favorite                    |"
+	  echo "| editor, e.g. 'nano /boot/teslausb_setup_variables.conf' and fill in       |"
+	  echo "| the required variables. Instructions are in the file, and at              |"
+	  echo "| https://github.com/MagoKimbra/teslausb/blob/main-dev/doc/OneStepSetup.md  |"
+	  echo "| (though ignore the Raspberry Pi specific bits about flashing and          |"
+	  echo "| mounting the sd card on a PC)                                             |"
+	  echo "|                                                                           |"
+	  echo "| When done, save changes and run /etc/rc.local                             |"
+	  echo "+---------------------------------------------------------------------------+"
 	fi
 	EOF
 fi
