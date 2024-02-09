@@ -79,7 +79,13 @@ then
   mkdir -p "$gadget_root/functions/mass_storage.0/${lun}"
   echo "/backingfiles/lightshow_disk.bin" > "$gadget_root/functions/mass_storage.0/${lun}/file"
   echo "TeslaUSB LIGHTSHOW $(du -h /backingfiles/lightshow_disk.bin | awk '{print $1}')" > "$gadget_root/functions/mass_storage.0/${lun}/inquiry_string"
-  lun="lun.3"
+  if [[ $lun == "lun.1" ]]
+  then
+    lun="lun.2"
+  elif [[ $lun == "lun.2" ]]
+  then   
+    lun="lun.3"
+  fi
 fi
 
 # boombox drive is either lun 1,2 or 3, depending on whether music drive or lightbox is used
