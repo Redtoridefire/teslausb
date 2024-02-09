@@ -74,11 +74,11 @@ then
 fi
 
 # one lun is created by default, so we only need to create the 3nd one
-if [ -e "/backingfiles/lightbox_disk.bin" ]
+if [ -e "/backingfiles/lightshow_disk.bin" ]
 then
   mkdir -p "$gadget_root/functions/mass_storage.0/${lun}"
-  echo "/backingfiles/lightbox_disk.bin" > "$gadget_root/functions/mass_storage.0/${lun}/file"
-  echo "TeslaUSB LIGHTBOX $(du -h /backingfiles/lightbox_disk.bin | awk '{print $1}')" > "$gadget_root/functions/mass_storage.0/${lun}/inquiry_string"
+  echo "/backingfiles/lightshow_disk.bin" > "$gadget_root/functions/mass_storage.0/${lun}/file"
+  echo "TeslaUSB LIGHTSHOW $(du -h /backingfiles/lightshow_disk.bin | awk '{print $1}')" > "$gadget_root/functions/mass_storage.0/${lun}/inquiry_string"
   if [ lun == "lun.1"]
   then
     lun="lun.2"
