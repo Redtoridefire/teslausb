@@ -49,7 +49,7 @@ iframe {
   height:100%;
 }
 
-.lightshow {
+.boombox {
   width:100%;
   height:100%;
 }
@@ -775,7 +775,7 @@ video {
     <label for="tab4" class="tablabel tablabel4">Tools</label>
     <label for="tab5" class="tablabel tablabel5">Recordings</label>
     <label for="tab6" class="tablabel tablabel6">Music</label>
-    <label for="tab7" class="tablabel tablabel7">LightShow</label>
+    <label for="tab7" class="tablabel tablabel7">Boombox</label>
     <label for="tab8" class="tablabel tablabel8">Viewer</label>
 
     <div class="stretchable"></div>
@@ -890,7 +890,7 @@ video {
   </div>
 
   <div class="tab content7">
-    <div id="lightshowbrowser" style="width:100%;height:calc(100% - 4px);">
+    <div id="boomboxbrowser" style="width:100%;height:calc(100% - 4px);">
     </div>
   </div>
 
@@ -1042,9 +1042,9 @@ function hideMusicParent() {
   }
 }
 
-function hideLightParent() {
-  var i = document.querySelector(".lightshow");
-  if (i.contentWindow.location.pathname === "/LightShow/") {
+function hideBoomboxParent() {
+  var i = document.querySelector(".boombox");
+  if (i.contentWindow.location.pathname === "/Boombox/") {
     var parentlink = i.contentDocument.querySelector("#list tbody tr");
     parentlink.parentElement.removeChild(parentlink);
   }
@@ -2703,8 +2703,8 @@ mediaQuery.addListener(setCurrentTabName);
 var fb = document.querySelector("#musicbrowser");
 new FileBrowser(fb, "fs/Music" /* relative path */, "Music" /* label */);
 
-var fb = document.querySelector("#lightbrowser");
-new FileBrowser(fb, "fs/Boombox/LightShow" /* relative path */, "LightShow" /* label */);
+var fb = document.querySelector("#boomboxbrowser");
+new FileBrowser(fb, "fs/Boombox/" /* relative path */, "Boombox" /* label */);
 
 </script>
 </body>
