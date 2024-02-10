@@ -31,22 +31,26 @@ function flash_rapidly {
 rootpart=$(findmnt -n -o SOURCE /)
 rootname=$(lsblk -no pkname "${rootpart}")
 rootdev="/dev/${rootname}"
+marker="/root/RESIZE_ATTEMPTED"
 
 # Check that the root partition is the last one.
 lastpart=$(sfdisk -l "$rootdev" | tail -1 | awk '{print $1}')
 
-if [ "$rootpart" != "$lastpart" ]
-then
-  error_exit "root partition is not the last partition."
-fi
-
-# Check if there is sufficient unpartitioned space after the root
+# Check if there is sufficient unpartitioned space after the last
 # partition to create the backingfiles and mutable partitions.
 # TODO: provide a way to skip this, to support having boot+root on
 # eMMC or sd card, and storage elsewhere
 unpart=$(sfdisk -F "$rootdev" | grep -o '[0-9]* bytes' | head -1 | awk '{print $1}')
-if [ "$unpart" -lt  $(( (1<<30) * 40)) ]
+if [ "$unpart" -lt  $(( (1<<30) * 32)) ]
 then
+# This script will only shrink the root partition, and if there's another
+# partition following the root partition, we won't be able to grow the
+# unpartitioned space at the end of the disk by shrinking the root partition.
+if [ "$rootpart" != "$lastpart" ]
+then
+  error_exit "Insufficient unpartioned space, and root partition is not the last partition."
+fi
+
   # There is insufficient unpartitioned space.
   # Check if we've already shrunk the root filesystem, and shrink the root
   # partition to match if it hasn't been already
@@ -58,6 +62,12 @@ then
   partnumsectors=$(sfdisk -l -o Sectors "${rootdev}" | tail -1)
   if [ "$partnumsectors" -le "$fsnumsectors" ]
   then
+    if [ -f "$marker" ]
+    then
+      error_exit "Previous resize attempt failed. Delete $marker before retrying."
+    fi
+    touch "$marker"
+
     echo "insufficient unpartitioned space, attempting to shrink root file system"
 
     cat <<- EOF > /etc/rc.local
@@ -102,6 +112,7 @@ then
     } | bash -s 3G
     exit 0
   fi
+  rm "$marker"
   # shrink root partition to match root file system size
   echo "shrinking root partition to match root fs, $fsnumsectors sectors"
   sleep 3
@@ -170,7 +181,7 @@ flash_rapidly
 DEFUSER=$(grep ":1000:1000:" /etc/passwd | awk -F : '{print $1}')
 if [ -n "$DEFUSER" ]
 then
-  if [ ! -e "/home/$DEFUSER/.bashrc" ] || ! grep "SETUP_FINISHED" "/home/$DEFUSER/.bashrc"
+  if [ ! -e "/home/$DEFUSER/.bashrc" ] || ! grep -q "SETUP_FINISHED" "/home/$DEFUSER/.bashrc"
   then
     cat <<- EOF >> "/home/$DEFUSER/.bashrc"
 		if [ ! -e /boot/TESLAUSB_SETUP_FINISHED ]
@@ -184,22 +195,25 @@ then
   fi
 fi
 
-if ! grep "SETUP_FINISHED" /root/.bashrc
+if ! grep -q "SETUP_FINISHED" /root/.bashrc
 then
   cat <<- EOF >> /root/.bashrc
 	if [ ! -e /boot/TESLAUSB_SETUP_FINISHED ]
 	then
-	  echo "+---------------------------------------------------------------------------+"
-	  echo "| To continue teslausb setup, edit the file                                 |"
-	  echo "| /boot/teslausb_setup_variables.conf with your favorite                    |"
-	  echo "| editor, e.g. 'nano /boot/teslausb_setup_variables.conf' and fill in       |"
-	  echo "| the required variables. Instructions are in the file, and at              |"
-	  echo "| https://github.com/MagoKimbra/teslausb/blob/main-dev/doc/OneStepSetup.md  |"
-	  echo "| (though ignore the Raspberry Pi specific bits about flashing and          |"
-	  echo "| mounting the sd card on a PC)                                             |"
-	  echo "|                                                                           |"
-	  echo "| When done, save changes and run /etc/rc.local                             |"
-	  echo "+---------------------------------------------------------------------------+"
+	  echo "+------------------------------------------------------------------------+"
+	  echo "| To continue teslausb setup, edit the file                              |"
+	  echo "| /boot/teslausb_setup_variables.conf with your favorite                 |"
+	  echo "| editor, e.g. 'nano /boot/teslausb_setup_variables.conf' and fill in    |"
+	  echo "| the required variables. Instructions are in the file, and at           |"
+	  echo "| https://github.com/marcone/teslausb/blob/main-dev/doc/OneStepSetup.md  |"
+	  echo "| (though ignore the Raspberry Pi specific bits about flashing and       |"
+	  echo "| mounting the sd card on a PC)                                          |"
+	  echo "|                                                                        |"
+	  echo "| When done, save changes and run /etc/rc.local                          |"
+	  echo "+------------------------------------------------------------------------+"
 	fi
 	EOF
 fi
+
+# hack to print the above message without duplicating it here
+grep -A 12 SETUP_FINISHED .bashrc  | grep echo | while read line; do eval "$line"; done
