@@ -222,6 +222,11 @@ fi
 
 REMAINING_SPACE="$(available_space)"
 
+if [ "$LIGHTSHOW_DISK_SIZE" -gt "$REMAINING_SPACE" ]
+then
+  LIGHTSHOW_DISK_SIZE="$REMAINING_SPACE"
+fi
+
 if [ "$REMAINING_SPACE" -ge 1024 ] && [ "$LIGHTSHOW_DISK_SIZE" -gt 0 ]
 then
   add_drive "lightshow" "LIGHTSHOW" "$LIGHTSHOW_DISK_SIZE" "$LIGHTSHOW_DISK_FILE_NAME" "$USE_EXFAT"
