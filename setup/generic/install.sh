@@ -105,7 +105,7 @@ fi
     fi
 
     {
-      while ! curl -s https://raw.githubusercontent.com/MagoKimbra/teslausb/main-dev/tools/debian-resizefs.sh
+      while ! curl -s https://raw.githubusercontent.com/marcone/teslausb/main-dev/tools/debian-resizefs.sh
       do
         sleep 1
       done
