@@ -147,7 +147,7 @@ fi
 # and the wifi config template
 if [ ! -e /boot/wpa_supplicant.conf.sample ]
 then
-  while ! curl -o /boot/wpa_supplicant.conf.sample https://raw.githubusercontent.com/MagoKimbra/teslausb/main-dev/pi-gen-sources/00-teslausb-tweaks/files/wpa_supplicant.conf.sample
+  while ! curl -o /boot/wpa_supplicant.conf.sample https://raw.githubusercontent.com/marcone/teslausb/main-dev/pi-gen-sources/00-teslausb-tweaks/files/wpa_supplicant.conf.sample
   do
     sleep 1
   done
@@ -157,7 +157,7 @@ fi
 # continue using the regular "one step setup" process used
 # for setting up a Raspberry Pi with the prebuilt image
 rm -f /etc/rc.local
-while ! curl -o /etc/rc.local https://raw.githubusercontent.com/MagoKimbra/teslausb/main-dev/pi-gen-sources/00-teslausb-tweaks/files/rc.local
+while ! curl -o /etc/rc.local https://raw.githubusercontent.com/marcone/teslausb/main-dev/pi-gen-sources/00-teslausb-tweaks/files/rc.local
 do
   sleep 1
 done
