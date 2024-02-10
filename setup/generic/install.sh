@@ -43,13 +43,13 @@ lastpart=$(sfdisk -l "$rootdev" | tail -1 | awk '{print $1}')
 unpart=$(sfdisk -F "$rootdev" | grep -o '[0-9]* bytes' | head -1 | awk '{print $1}')
 if [ "$unpart" -lt  $(( (1<<30) * 32)) ]
 then
-# This script will only shrink the root partition, and if there's another
-# partition following the root partition, we won't be able to grow the
-# unpartitioned space at the end of the disk by shrinking the root partition.
-if [ "$rootpart" != "$lastpart" ]
-then
-  error_exit "Insufficient unpartioned space, and root partition is not the last partition."
-fi
+  # This script will only shrink the root partition, and if there's another
+  # partition following the root partition, we won't be able to grow the
+  # unpartitioned space at the end of the disk by shrinking the root partition.
+  if [ "$rootpart" != "$lastpart" ]
+  then
+    error_exit "Insufficient unpartioned space, and root partition is not the last partition."
+  fi
 
   # There is insufficient unpartitioned space.
   # Check if we've already shrunk the root filesystem, and shrink the root
