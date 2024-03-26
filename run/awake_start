@@ -32,7 +32,11 @@ function ping {
     if [[ ( -n "${TESSIE_API_TOKEN:+x}" ) ]]
     # Use Tessie API to keep car awake.
     then
-      http_status=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer $TESSIE_API_TOKEN" -H "Accept: application/json" "https://api.tessie.com/$TESSIE_VIN/wake")
+      http_status=$(curl -s -o /dev/null -w "%{http_code}" \
+          -H "Authorization: Bearer $TESSIE_API_TOKEN" \
+          -H "Accept: application/json" \
+          -H "User-Agent: github.com/marcone/teslausb" \
+          "https://api.tessie.com/$TESSIE_VIN/wake")
       
       if [ "$http_status" != "200" ]; then
           # Log an error
