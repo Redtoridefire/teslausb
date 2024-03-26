@@ -250,6 +250,10 @@ function check_tessie_api () {
     then
       log_progress "STOP: You're trying to setup Tessie and TeslaFi APIs at the same time."
       log_progress "Only 1 can be enabled at a time."
+    elif [[ ( -z "${TESSIE_VIN:+x}" ) ]]    
+    then
+      log_progress "STOP: Tessie API requires the VIN number to be provided."
+      log_progress "Please set TESSIE_VIN in the config file."
     else
       log_progress "Tessie API enabled." 
     fi
