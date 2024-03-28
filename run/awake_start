@@ -36,11 +36,11 @@ function ping {
           -H "Authorization: Bearer $TESSIE_API_TOKEN" \
           -H "Accept: application/json" \
           -H "User-Agent: github.com/marcone/teslausb" \
-          "https://api.tessie.com/$TESSIE_VIN/wake")
+          "https://api.tessie.com/$TESSIE_VIN/state?use_cache=false")
       
       if [ "$http_status" != "200" ]; then
           # Log an error
-          log "Failed to contact car using Tessie API. Check your TESSIE_API_TOKEN and TESSIE_VIN are set correctly. Retrying in 5mins..."
+          log "Failed to contact car using Tessie API. Check your TESSIE_API_TOKEN and TESSIE_VIN are set correctly. If they are, your car may not have a good connection. Retrying in 5mins..."
       fi
       
       sleep 600
