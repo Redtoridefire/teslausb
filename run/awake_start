@@ -40,10 +40,10 @@ function ping {
       
       if [ "$http_status" != "200" ]; then
           # Log an error
-          log "Failed to contact car using Tessie API. Check your TESSIE_API_TOKEN and TESSIE_VIN are set correctly. If they are, your car may not have a good connection.  Retrying in 5mins..."
+          log "Failed to contact car using Tessie API. Check your TESSIE_API_TOKEN and TESSIE_VIN are set correctly. If they are, your car may not have a good connection.  Retrying in 3mins..."
       fi
       
-      sleep 600
+      sleep 180
     fi    
   done
 }
