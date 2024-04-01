@@ -47,18 +47,16 @@ function ping {
         # Check if HTTP status code is not 200 (OK)
         if [ "$http_status" != "200" ]; then
             # Log an error
-            log "Failed to contact car using Tessie API. Check your TESSIE_API_TOKEN and TESSIE_VIN are set correctly. If they are, your car may not have a good connection. Retrying in 5 minutes..."
+            log "Failed to wake car with Tessie API. Check your TESSIE_API_TOKEN and TESSIE_VIN are set correctly. If they are, your car may not have a good connection. Retrying in 5 minutes..."
         else
             # Check if the response is in JSON format
             if ! jq -e . >/dev/null 2>&1 <<<"$response_body"; then
-                log "Error: Response is not in JSON format. Response data: $response_body"
+                log "Failed to wake car with Tessie API. Retrying in 5 minutes. Response data: $response_body"
             else
                 # Parse JSON and check if "result" is true
                 result=$(jq -r '.result' <<<"$response_body")
                 if [[ "$result" != "true" ]]; then
-                    log "Error: Result is not true. Response data: $response_body"
-                else
-                    log "Success! Car is awake."
+                    log "Failed to wake car with Tessie API. Retrying in 5 minutes. Response data: $response_body"
                 fi
             fi
         fi
