@@ -48,24 +48,28 @@ function ping {
         if [ "$http_status" != "200" ]
         then
             # Log an error
-            log "Failed to wake car with Tessie API. Check your TESSIE_API_TOKEN and TESSIE_VIN are set correctly. If they are, your car may not have a good connection. Retrying in 5 minutes..."
+            log "Failed to wake car with Tessie API. Check your TESSIE_API_TOKEN and TESSIE_VIN are set correctly. If they are, your car may not have a good connection. Retrying in 1 minute..."
+            sleep 60
         else
             # Check if the response is in JSON format
             if ! jq -e . >/dev/null 2>&1 <<<"$response_body"
             then
-                log "Failed to wake car with Tessie API. Retrying in 5 minutes. Response data: $response_body"
+                log "Failed to wake car with Tessie API. Retrying in 1 minute. Response data: $response_body"
+                sleep 60
             else
                 # Parse JSON and check if "result" is true
                 result=$(jq -r '.result' <<<"$response_body")
                 if [[ "$result" != "true" ]]
                 then
-                    log "Failed to wake car with Tessie API. Retrying in 5 minutes. Response data: $response_body"
+                    log "Failed to wake car with Tessie API. Retrying in 1 minute. Response data: $response_body"
+                    sleep 60
+                else
+                    # Sleep for 5 minutes on successful wake-up call
+                    sleep 300
                 fi
             fi
         fi
-        
-        sleep 300
-    fi  
+    fi
   done
 }
 
