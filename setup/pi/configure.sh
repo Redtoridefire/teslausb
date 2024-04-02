@@ -255,6 +255,12 @@ function check_tessie_api () {
       log_progress "STOP: Tessie API requires the VIN number to be provided."
       log_progress "Please set TESSIE_VIN in the config file."
     else
+      if ! command -v jq &>/dev/null
+      then
+        log_progress "Installing required package for Tessie API: jq"
+        DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes install jq
+      fi
+
       log_progress "Tessie API enabled." 
     fi
   else

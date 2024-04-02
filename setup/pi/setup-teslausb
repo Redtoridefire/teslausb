@@ -977,12 +977,6 @@ make_root_fs_readonly
 
 upgrade_packages
 
-if ! command -v jq &>/dev/null
-then
-  setup_progress "Installing package: jq"
-  DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes install jq
-fi
-
 if [ -n "${INSTALL_USER_REQUESTED_PACKAGES:-}" ]
 then
   setup_progress "Installing user requested packages: ${INSTALL_USER_REQUESTED_PACKAGES}"
