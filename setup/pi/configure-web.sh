@@ -77,10 +77,22 @@ EOF
 
 if [ -e /backingfiles/music_disk.bin ]
 then
-  mkdir -p /var/www/html/fs
+  mkdir -p /var/www/html/fs/Music
   copy_script run/auto.www /root/bin
-  echo "/var/www/html/fs  /root/bin/auto.www" > /etc/auto.master.d/www.autofs
+  echo "/var/www/html/fs/Music  /root/bin/auto.www" > /etc/auto.master.d/Music.autofs
   apt-get -y --force-yes install zip
+fi
+if [ -e /backingfiles/lightshow_disk.bin ]
+then
+  mkdir -p /var/www/html/fs/LightShow
+  copy_script run/auto.www /root/bin
+  echo "/var/www/html/fs/LightShow  /root/bin/auto.www" > /etc/auto.master.d/LightShow.autofs
+fi
+if [ -e /backingfiles/boombox_disk.bin ]
+then
+  mkdir -p /var/www/html/fs/Boombox
+  copy_script run/auto.www /root/bin
+  echo "/var/www/html/fs/Boombox  /root/bin/auto.www" > /etc/auto.master.d/BoomBox.autofs
 fi
 
 setup_progress "done configuring nginx"
