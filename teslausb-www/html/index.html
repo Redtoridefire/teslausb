@@ -2591,9 +2591,13 @@ readfile({url:'cgi-bin/videolist.sh', callback:function(value) {
       }
       videos[i][c].initialize();
 
-      var newelem = makeDropdownItem(i, c, videos[i][c] == newestsequence);
-      if (newelem != undefined) {
-        d.appendChild(newelem);
+      try {
+        var newelem = makeDropdownItem(i, c, videos[i][c] == newestsequence);
+        if (newelem != undefined) {
+          d.appendChild(newelem);
+        }
+      } catch (error) {
+        console.error(`Error parsing ${i}/${c}: ${error}`);
       }
     }
     if (localStorageGet("eventorder") == "newest") {
