@@ -38,7 +38,7 @@ ethdev=$(find /sys/class/net/ -type l \( -name 'eth*' -o -name 'en*' \) -printf 
 if [ -n "$ethdev" ]
 then
   read -r _ ether_ip _ < <(ifconfig "$ethdev" | grep "inet ")
-  IFS=" :" read -r _ ether_speed < <(ethtool "$ethdev" | grep Speed)
+  IFS=" :" read -r _ ether_speed < <(ethtool "$ethdev" 2>&1 | grep Speed)
 else
   ether_ip=
   ether_speed=
